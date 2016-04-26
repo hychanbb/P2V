@@ -1,9 +1,11 @@
 package com.example.hoyuichan.p2v;
 
+import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -11,6 +13,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Typeface myTypeface = Typeface.createFromAsset(getAssets(), "fff_Tusj.ttf");
+        TextView myTextView = (TextView) findViewById(R.id.app_name);
+        myTextView.setTypeface(myTypeface);
     }
 
     @Override
