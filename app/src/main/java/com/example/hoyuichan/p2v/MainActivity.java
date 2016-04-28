@@ -1,18 +1,35 @@
 package com.example.hoyuichan.p2v;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
-import android.support.v7.app.AppCompatActivity;
+import android.os.Handler;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.GridView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.io.File;
+import com.example.hoyuichan.p2v.MultiplePhotoSelection.Action;
+import com.example.hoyuichan.p2v.MultiplePhotoSelection.CustomGallery;
+import com.example.hoyuichan.p2v.MultiplePhotoSelection.GalleryAdapter;
+import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
-public class MainActivity extends AppCompatActivity {
+import java.util.ArrayList;
+
+public class MainActivity extends Activity {
+
+    Handler handler;
+    GalleryAdapter adapter;
+    Button photo;
+    ImageLoader imageLoader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,9 +48,60 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        initImageLoader();
+        init();
+    }
 
+    private void initImageLoader() {
+        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
+                .cacheOnDisc().imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
+                .bitmapConfig(Bitmap.Config.RGB_565).build();
+        ImageLoaderConfiguration.Builder builder = new ImageLoaderConfiguration.Builder(
+                this).defaultDisplayImageOptions(defaultOptions).memoryCache(
+                new WeakMemoryCache());
 
+        ImageLoaderConfiguration config = builder.build();
+        imageLoader = ImageLoader.getInstance();
+        imageLoader.init(config);
+    }
 
+    private void init() {
+
+        handler = new Handler();
+        adapter = new GalleryAdapter(getApplicationContext(), imageLoader);
+        adapter.setMultiplePick(false);
+
+        photo = (Button) findViewById(R.id.photo);
+        photo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(Action.ACTION_MULTIPLE_PICK);
+                startActivityForResult(i, 200);
+            }
+        });
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 200 && resultCode == Activity.RESULT_OK) {
+            String[] all_path = data.getStringArrayExtra("all_path");
+            for (int i=0; i<all_path.length; i++){
+                System.out.println(all_path[i]);
+            }
+
+            ArrayList<CustomGallery> dataT = new ArrayList<CustomGallery>();
+
+            for (String string : all_path) {
+                CustomGallery item = new CustomGallery();
+                item.sdcardPath = string;
+                dataT.add(item);
+            }
+
+            adapter.addAll(dataT);
+        }
     }
 
     @Override
