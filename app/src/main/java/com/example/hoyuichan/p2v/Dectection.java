@@ -24,7 +24,7 @@ public class Dectection {
         return true;
     }
 
-    public double blurDetection( String path ){
+    public boolean blurDetection( String path ){
         opencv_core.IplImage image1 = cvLoadImage(path);
         cvLaplace(image1,image1);
         opencv_core.CvMat image2 = image1.asCvMat();
@@ -35,7 +35,8 @@ public class Dectection {
         Double d = stddev.val(1);
         image2.release();
         image1.release();
-        return d*d;
+        double result =  d*d;
+        return (result< 600);
     }
 
     public double[][] getHist (String path){
@@ -64,14 +65,16 @@ public class Dectection {
         return hist;
     }
 
-    public double simDetection (double [][] histA, double[][] histB){
+    public boolean simDetection (double [][] histA, double[][] histB){
         double sim= (double) 0.0;
         for (int i=0; i<histA.length;i++){
             for(int j=0 ; j<histA[0].length ; j++){
                 sim = sim +Math.sqrt(histA[i][j]*histB[i][j]);
             }
         }
-        return sim/3;
+        double threshold = (double)0.96;
+        double result = sim/3;
+        return (result>threshold);
     }
 
 }
