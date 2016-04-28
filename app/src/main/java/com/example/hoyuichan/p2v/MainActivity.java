@@ -9,8 +9,8 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
-import android.widget.GridView;
 import android.widget.TextView;
 
 import com.example.hoyuichan.p2v.MultiplePhotoSelection.Action;
@@ -28,12 +28,13 @@ public class MainActivity extends Activity {
 
     Handler handler;
     GalleryAdapter adapter;
-    Button photo;
+    Button start;
     ImageLoader imageLoader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
         Typeface myTypeface = Typeface.createFromAsset(getAssets(), "fff_Tusj.ttf");
         TextView myTextView = (TextView) findViewById(R.id.app_name);
@@ -71,8 +72,8 @@ public class MainActivity extends Activity {
         adapter = new GalleryAdapter(getApplicationContext(), imageLoader);
         adapter.setMultiplePick(false);
 
-        photo = (Button) findViewById(R.id.photo);
-        photo.setOnClickListener(new View.OnClickListener() {
+        start = (Button) findViewById(R.id.start);
+        start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(Action.ACTION_MULTIPLE_PICK);
@@ -88,9 +89,6 @@ public class MainActivity extends Activity {
 
         if (requestCode == 200 && resultCode == Activity.RESULT_OK) {
             String[] all_path = data.getStringArrayExtra("all_path");
-            for (int i=0; i<all_path.length; i++){
-                System.out.println(all_path[i]);
-            }
 
             ArrayList<CustomGallery> dataT = new ArrayList<CustomGallery>();
 

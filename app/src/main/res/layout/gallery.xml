@@ -55,7 +55,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@drawable/btn_sel"
-            android:text="@string/btn_ok" />
+            android:text="@string/btn_next"
+            android:textAllCaps="false"/>
     </LinearLayout>
 
 </LinearLayout>

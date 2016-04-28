@@ -142,9 +142,4 @@ public class GalleryAdapter extends BaseAdapter {
 		ImageView imgQueue;
 		ImageView imgQueueMultiSelected;
 	}
-
-	public void clear() {
-		data.clear();
-		notifyDataSetChanged();
-	}
 }

@@ -161,17 +161,6 @@ public class CustomGalleryActivity extends Activity {
 		}
 	};
 
-	AdapterView.OnItemClickListener mItemSingleClickListener = new AdapterView.OnItemClickListener() {
-
-		@Override
-		public void onItemClick(AdapterView<?> l, View v, int position, long id) {
-			CustomGallery item = adapter.getItem(position);
-			Intent data = new Intent().putExtra("single_path", item.sdcardPath);
-			setResult(RESULT_OK, data);
-			finish();
-		}
-	};
-
 	private ArrayList<CustomGallery> getGalleryPhotos() {
 		ArrayList<CustomGallery> galleryList = new ArrayList<CustomGallery>();
 
