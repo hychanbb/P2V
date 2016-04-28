@@ -17,6 +17,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 
 import com.example.hoyuichan.p2v.R;
+import com.example.hoyuichan.p2v.VideoSettingActivity;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -146,9 +147,14 @@ public class CustomGalleryActivity extends Activity {
 				allPath[i] = selected.get(i).sdcardPath;
 			}
 
-			Intent data = new Intent().putExtra("all_path", allPath);
+			Intent intent = new Intent();
+			intent.setClass(CustomGalleryActivity.this, VideoSettingActivity.class);
+			intent.putExtra("all_path", allPath);
+			startActivity(intent);
+
+			/*Intent data = new Intent().putExtra("all_path", allPath);
 			setResult(RESULT_OK, data);
-			finish();
+			finish();*/
 
 		}
 	};

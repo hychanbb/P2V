@@ -77,7 +77,8 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(Action.ACTION_MULTIPLE_PICK);
-                startActivityForResult(i, 200);
+                startActivity(i);
+                //startActivityForResult(i, 200);
             }
         });
 

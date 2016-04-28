@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/templateText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Template"
+        android:layout_marginTop="50dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginRight="10dp"
+        android:textSize="20dp"/>
+
+    <Button
+        android:id="@+id/template"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:drawableRight="@drawable/icon_go"
+        android:text="No Template"
+        android:textSize="20dp"
+        android:gravity="left"
+        android:padding="15dp"
+        android:background="@drawable/my_item_bg" />
+
+    <TextView
+        android:id="@+id/effectText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Effect"
+        android:layout_marginTop="50dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginRight="10dp"
+        android:textSize="20dp"/>
+
+    <Button
+        android:id="@+id/effect"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:drawableRight="@drawable/icon_go"
+        android:text="No Effect"
+        android:textSize="20dp"
+        android:gravity="left"
+        android:padding="15dp"
+        android:background="@drawable/my_item_bg" />
+
+    <TextView
+        android:id="@+id/musicText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Music"
+        android:layout_marginTop="50dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginRight="10dp"
+        android:textSize="20dp"/>
+
+    <Button
+        android:id="@+id/music"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:drawableRight="@drawable/icon_go"
+        android:text="No Music"
+        android:textSize="20dp"
+        android:gravity="left"
+        android:padding="15dp"
+        android:background="@drawable/my_item_bg" />
+
+    <Button
+        android:id="@+id/btn_next"
+        style="@style/btn"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/btn_sel"
+        android:text="Next"
+        android:textAllCaps="false"
+        android:layout_marginTop="50dp"/>
+
+</LinearLayout>
