@@ -13,8 +13,8 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.example.hoyuichan.p2v.MultiplePhotoSelection.Action;
 import com.example.hoyuichan.p2v.MultiplePhotoSelection.CustomGallery;
+import com.example.hoyuichan.p2v.MultiplePhotoSelection.CustomGalleryActivity;
 import com.example.hoyuichan.p2v.MultiplePhotoSelection.GalleryAdapter;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -76,31 +76,12 @@ public class MainActivity extends Activity {
         start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(Action.ACTION_MULTIPLE_PICK);
-                startActivity(i);
-                //startActivityForResult(i, 200);
+                Intent intent = new Intent();
+                intent.setClass(MainActivity.this, CustomGalleryActivity.class);
+                startActivity(intent);
             }
         });
 
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == 200 && resultCode == Activity.RESULT_OK) {
-            String[] all_path = data.getStringArrayExtra("all_path");
-
-            ArrayList<CustomGallery> dataT = new ArrayList<CustomGallery>();
-
-            for (String string : all_path) {
-                CustomGallery item = new CustomGallery();
-                item.sdcardPath = string;
-                dataT.add(item);
-            }
-
-            adapter.addAll(dataT);
-        }
     }
 
     @Override

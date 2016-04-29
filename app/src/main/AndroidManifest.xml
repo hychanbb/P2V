@@ -28,13 +28,7 @@
             android:name=".PlayVideoActivity"
             android:label="@string/title_activity_play_video" >
         </activity>
-        <activity android:name=".MultiplePhotoSelection.CustomGalleryActivity">
-            <intent-filter>
-                <action android:name="luminous.ACTION_MULTIPLE_PICK" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".MultiplePhotoSelection.CustomGalleryActivity"/>
         <activity android:name=".VideoSettingActivity"/>
     </application>
 

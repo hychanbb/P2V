@@ -49,10 +49,6 @@ public class CustomGalleryActivity extends Activity {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.gallery);
 
-		action = getIntent().getAction();
-		if (action == null) {
-			finish();
-		}
 		initImageLoader();
 		init();
 	}
@@ -94,13 +90,9 @@ public class CustomGalleryActivity extends Activity {
 				true, true);
 		gridGallery.setOnScrollListener(listener);
 
-		if (action.equalsIgnoreCase(Action.ACTION_MULTIPLE_PICK)) {
-
-			findViewById(R.id.llBottomContainer).setVisibility(View.VISIBLE);
-			gridGallery.setOnItemClickListener(mItemMulClickListener);
-			adapter.setMultiplePick(true);
-
-		}
+		findViewById(R.id.llBottomContainer).setVisibility(View.VISIBLE);
+		gridGallery.setOnItemClickListener(mItemMulClickListener);
+		adapter.setMultiplePick(true);
 
 		gridGallery.setAdapter(adapter);
 		imgNoMedia = (ImageView) findViewById(R.id.imgNoMedia);
@@ -151,10 +143,6 @@ public class CustomGalleryActivity extends Activity {
 			intent.setClass(CustomGalleryActivity.this, VideoSettingActivity.class);
 			intent.putExtra("all_path", allPath);
 			startActivity(intent);
-
-			/*Intent data = new Intent().putExtra("all_path", allPath);
-			setResult(RESULT_OK, data);
-			finish();*/
 
 		}
 	};
