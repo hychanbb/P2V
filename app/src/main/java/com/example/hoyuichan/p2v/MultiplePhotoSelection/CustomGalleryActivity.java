@@ -39,7 +39,7 @@ public class CustomGalleryActivity extends Activity {
 
 	ImageView imgNoMedia;
 	Button btnGalleryOk;
-
+	String[]  allPath;
 	String action;
 	private ImageLoader imageLoader;
 
@@ -134,14 +134,14 @@ public class CustomGalleryActivity extends Activity {
 		public void onClick(View v) {
 			ArrayList<CustomGallery> selected = adapter.getSelected();
 
-			String[] allPath = new String[selected.size()];
+			 allPath = new String[selected.size()];
 			for (int i = 0; i < allPath.length; i++) {
 				allPath[i] = selected.get(i).sdcardPath;
 			}
 
 			Intent intent = new Intent();
 			intent.setClass(CustomGalleryActivity.this, VideoSettingActivity.class);
-			intent.putExtra("all_path", allPath);
+			intent.putExtra("allPath", allPath);
 			startActivity(intent);
 
 		}

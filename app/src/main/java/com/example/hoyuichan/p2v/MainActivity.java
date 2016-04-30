@@ -69,6 +69,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent();
+
                 intent.setClass(MainActivity.this, CustomGalleryActivity.class);
                 startActivity(intent);
             }

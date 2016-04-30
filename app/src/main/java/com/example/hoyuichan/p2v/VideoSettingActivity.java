@@ -27,9 +27,11 @@ public class VideoSettingActivity extends Activity {
      ArrayList<String> musicFileName = new ArrayList<String>();
      String chosenMusicPath = null;
      String chosenMusicName = null;
+    String chosenEffectName;
+    String chosenTemplateName;
      int  chosenEffect;
      int chosenTemplate;
-    String[] PhotoPathInStringArray;
+    String[]  allPath;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,7 +39,7 @@ public class VideoSettingActivity extends Activity {
         setContentView(R.layout.activity_videosetting);
 
         Intent intent = getIntent();
-        PhotoPathInStringArray = intent.getStringArrayExtra("all_path");
+        allPath = intent.getStringArrayExtra("allPath");
         musicPath = getMusicPath("mp3");
         int[] id = {R.id.templateText, R.id.effectText, R.id.musicText};
         for (int i=0; i<id.length; i++){
@@ -50,7 +52,19 @@ public class VideoSettingActivity extends Activity {
             musicFileName.add(f.getName());
         }
 
+        findViewById(R.id.template).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                selectTemplate();
+            }
+        });
 
+        findViewById(R.id.effect).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                selectEffect();
+            }
+        });
         findViewById(R.id.music).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
@@ -63,11 +77,23 @@ public class VideoSettingActivity extends Activity {
             public void onClick(View v){
                 //if( (chosenMusicPath!=null)&&(chosenEffect!=0)&&(chosenTemplate!=0)){
                     Intent intent = new Intent();
-                    intent.putExtra("chosenMusicPath" , chosenMusicPath);
-                    intent.putExtra("chosenMusicName" , chosenMusicName);
-                    intent.putExtra("chosenEffect" , chosenEffect);
-                    intent.putExtra("chosenTemplate" , chosenTemplate);
-                    intent.putExtra("PhotoPathInStringArray", PhotoPathInStringArray);
+                    intent.putExtra("chosenMusicPath", chosenMusicPath);
+                System.out.println("chosenMusicPath" + chosenMusicPath);
+
+                    intent.putExtra("chosenMusicName", chosenMusicName);
+                System.out.println("chosenMusicName" + chosenMusicName);
+
+                    intent.putExtra("chosenEffect", chosenEffect);
+                System.out.println("chosenEffect" + chosenEffect);
+
+                    intent.putExtra("chosenTemplate", chosenTemplate);
+                System.out.println("chosenTemplate" + chosenTemplate);
+
+                    intent.putExtra("allPath", allPath);
+                System.out.println("printing all paths....");
+                for(int i = 0 ; i<allPath.length ; i++) {
+                    System.out.println(allPath[i]);
+                }
                     intent.setClass(VideoSettingActivity.this, PlayVideoActivity.class);
                     startActivity(intent);
                 //}
@@ -104,8 +130,56 @@ public class VideoSettingActivity extends Activity {
         }
         return musicSubPath;
     }
+    public void selectTemplate(){
+        final String[] templateInList = {"No Template", "Chiristmas","Wedding","Romentic"};
+        final AlertDialog.Builder templateBuilder = new AlertDialog.Builder(VideoSettingActivity.this);
+        templateBuilder.setTitle("Choose Template");
+        templateBuilder.setSingleChoiceItems(templateInList, 0, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int position) {
+                System.out.println("template position : " + position);
+                chosenTemplateName = templateInList[position];
+                chosenTemplate = position;
+            }
+        });
+        templateBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int position) {
+                Button button = (Button) findViewById(R.id.template);
+                button.setText(chosenTemplateName);
 
-    public void selectMusic (){String[] musicInList = musicFileName.toArray(new String[0]);
+            }
+        });
+        templateBuilder.setNegativeButton("Cancel", null);
+        templateBuilder.show();
+
+    }
+
+    public void selectEffect(){
+        final String[] effectInList = {"No Effect", "Zooming","Multiple into One"};
+        final AlertDialog.Builder effectBuilder = new AlertDialog.Builder(VideoSettingActivity.this);
+        effectBuilder.setTitle("Choose Effect");
+        effectBuilder.setSingleChoiceItems(effectInList, 0, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int position) {
+                System.out.println("effect position : " + position);
+                chosenEffectName = effectInList[position];
+                chosenEffect = position;
+            }
+        });
+        effectBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int position) {
+                Button button = (Button) findViewById(R.id.effect);
+                button.setText(chosenEffectName);
+
+            }
+        });
+        effectBuilder.setNegativeButton("Cancel", null);
+        effectBuilder.show();
+    }
+    public void selectMusic (){
+        String[] musicInList = musicFileName.toArray(new String[0]);
         final AlertDialog.Builder musicTemplateBuilder = new AlertDialog.Builder(VideoSettingActivity.this);
         musicTemplateBuilder.setTitle("Choose Music");
         musicTemplateBuilder.setSingleChoiceItems(musicInList, 0, new DialogInterface.OnClickListener() {
@@ -156,7 +230,8 @@ public class VideoSettingActivity extends Activity {
                 }
             }
         });
-        musicTemplateBuilder.show();}
+        musicTemplateBuilder.show();
+    }
 
     public ArrayList<String> getMusicPath (String type){
         ArrayList<String> musicPath = new ArrayList<String>();

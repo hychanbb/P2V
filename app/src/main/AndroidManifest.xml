@@ -21,10 +21,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SelectMusicActivity"
-            android:label="@string/title_activity_select_music" >
-        </activity>
-        <activity
             android:name=".PlayVideoActivity"
             android:label="@string/title_activity_play_video" >
         </activity>
