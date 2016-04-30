@@ -19,6 +19,7 @@ public class PlayVideoActivity extends Activity {
     String chosenMusicName ;
     int  chosenEffect;
     int chosenTemplate;
+    String[] PhotoPathInStringArray;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,7 +29,7 @@ public class PlayVideoActivity extends Activity {
         chosenMusicName = intent.getStringExtra("chosenMusicName");
         chosenEffect = intent.getIntExtra("chosenEffect", 0);
         chosenTemplate = intent.getIntExtra("chosenTemplate", 0);
-
+        PhotoPathInStringArray = intent.getStringArrayExtra("PhotoPathInStringArray");
         File video = new File("/sdcard/DCIM/Camera/combine_old_version.mp4");
         playVideoOnView(video);
     }

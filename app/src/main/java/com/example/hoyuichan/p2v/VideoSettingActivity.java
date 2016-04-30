@@ -29,7 +29,7 @@ public class VideoSettingActivity extends Activity {
      String chosenMusicName = null;
      int  chosenEffect;
      int chosenTemplate;
-        String[] PhotoPathInStringArray;
+    String[] PhotoPathInStringArray;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,7 +88,10 @@ public class VideoSettingActivity extends Activity {
     private ArrayList<String> searchMusic(File file, String type){
         ArrayList<String> musicSubPath = new ArrayList<String>();
         File[] files = file.listFiles();
-
+        if(files.length == 0) {
+            System.out.println("no files");
+            return null;
+        }
         for (int i =0; i < files.length; i++) {
             String filePath = files[i].getAbsolutePath();
             String fileName = files[i].getName();
@@ -159,9 +162,14 @@ public class VideoSettingActivity extends Activity {
         ArrayList<String> musicPath = new ArrayList<String>();
         File sdCard = Environment.getExternalStorageDirectory();
         File[] files = sdCard.listFiles();
-        for (int i =0; i < files.length; i++) {
-            musicPath.addAll(searchMusic(files[i], type));
+        if(files.length == 0){
+            return null;
         }
-        return musicPath;
+        else {
+                for (int i = 0; i < files.length; i++) {
+                musicPath.addAll(searchMusic(files[i], type));
+            }
+            return musicPath;
+        }
     }
 }
