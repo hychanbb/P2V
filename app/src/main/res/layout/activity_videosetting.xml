@@ -63,7 +63,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:drawableRight="@drawable/icon_go"
-        android:text="No Music"
+        android:text="Choose Music"
         android:textSize="20dp"
         android:gravity="left"
         android:padding="15dp"

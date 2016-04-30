@@ -19,14 +19,14 @@ public class Dectection {
         int h = m1.arrayHeight();
         int w = m1.arrayWidth();
         if ((h<240) || (w<320)){
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 
     public boolean blurDetection( String path ){
         opencv_core.IplImage image1 = cvLoadImage(path);
-        cvLaplace(image1,image1);
+        cvLaplace(image1, image1);
         opencv_core.CvMat image2 = image1.asCvMat();
         opencv_core.CvScalar mean = new opencv_core.CvScalar();
         opencv_core.CvScalar stddev = new opencv_core.CvScalar();
@@ -72,7 +72,7 @@ public class Dectection {
                 sim = sim +Math.sqrt(histA[i][j]*histB[i][j]);
             }
         }
-        double threshold = (double)0.96;
+        double threshold = (double) 0.96;
         double result = sim/3;
         return (result>threshold);
     }
