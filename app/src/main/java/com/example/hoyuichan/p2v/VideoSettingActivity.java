@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.LayoutInflater;
@@ -14,12 +15,14 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
  * Created by OnzzZ on 29/4/2016.
  */
 public class VideoSettingActivity extends Activity {
+     MediaPlayer mp = new MediaPlayer();
      String musicChoosenPath = null;
      String musicChoosenName = null;
 
@@ -60,18 +63,49 @@ public class VideoSettingActivity extends Activity {
                         System.out.println("ON9 Malca 有樣睇 : " + position);
                         musicChoosenPath = musicPath.get(position);
                         musicChoosenName = musicFileName.get(position);
+                        if (mp.isPlaying()) {
+                            try {
+                                mp.stop();
+                                mp.release();
+                                mp = new MediaPlayer();
+                                mp.setDataSource(musicChoosenPath);
+                                mp.prepare();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        else{
+                            try {
+                                mp.setDataSource(musicChoosenPath);
+                                mp.prepare();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        mp.start();
                     }
                 });
                 musicTemplateBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int position) {
                         System.out.println("fk you Malca : " + position);
-                        Button p1_button = (Button)findViewById(R.id.music);
+                        Button p1_button = (Button) findViewById(R.id.music);
                         p1_button.setText(musicChoosenName);
-
+                        if (mp.isPlaying()) {
+                            mp.stop();
+                            mp.release();
+                        }
                     }
                 });
-                musicTemplateBuilder.setNegativeButton("Cancel", null);
+                musicTemplateBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (mp.isPlaying()) {
+                            mp.stop();
+                            mp.release();
+                        }
+                    }
+                });
                 musicTemplateBuilder.show();
             }
         });
