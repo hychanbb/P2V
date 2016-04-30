@@ -8,11 +8,11 @@ import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,8 +25,10 @@ public class VideoSettingActivity extends Activity {
      MediaPlayer mp = new MediaPlayer();
      ArrayList<String> musicPath = getMusicPath("mp3");
      ArrayList<String> musicFileName = new ArrayList<String>();
-     String musicChoosenPath = null;
-     String musicChoosenName = null;
+     String chosenMusicPath = null;
+     String chosenMusicName = null;
+     int  chosenEffect;
+     int chosenTemplate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +43,7 @@ public class VideoSettingActivity extends Activity {
         for (int i=0; i<id.length; i++){
             setFont(id[i]);
         }
+
         // building ArrayList of musicFileName
         for (int i =0 ; i< musicPath.size() ; i++){
             File f = new File(musicPath.get(i));
@@ -52,6 +55,24 @@ public class VideoSettingActivity extends Activity {
             @Override
             public void onClick(View v){
                 selectMusic();
+            }
+        });
+
+        findViewById(R.id.btn_next).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                if( (chosenMusicPath!=null)&&(chosenEffect!=0)&&(chosenTemplate!=0)){
+                    Intent intent = new Intent();
+                    intent.putExtra("chosenMusicPath" , chosenMusicPath);
+                    intent.putExtra("chosenMusicName" , chosenMusicName);
+                    intent.putExtra("chosenEffect" , chosenEffect);
+                    intent.putExtra("chosenTemplate" , chosenTemplate);
+                    intent.setClass(VideoSettingActivity.this, PlayVideoActivity.class);
+                    startActivity(intent);
+                }
+                else {
+                    Toast.makeText(VideoSettingActivity.this, "Please make selection on each section ! ", Toast.LENGTH_LONG).show();
+                }
             }
         });
     }
@@ -87,14 +108,14 @@ public class VideoSettingActivity extends Activity {
             @Override
             public void onClick(DialogInterface dialog, int position) {
                 System.out.println("ON9 Malca 有樣睇 : " + position);
-                musicChoosenPath = musicPath.get(position);
-                musicChoosenName = musicFileName.get(position);
+                chosenMusicPath = musicPath.get(position);
+                chosenMusicName = musicFileName.get(position);
                 if (mp.isPlaying()) {
                     try {
                         mp.stop();
                         mp.release();
                         mp = new MediaPlayer();
-                        mp.setDataSource(musicChoosenPath);
+                        mp.setDataSource(chosenMusicPath);
                         mp.prepare();
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -103,7 +124,7 @@ public class VideoSettingActivity extends Activity {
                 else{
                     try {
                         mp = new MediaPlayer();
-                        mp.setDataSource(musicChoosenPath);
+                        mp.setDataSource(chosenMusicPath);
                         mp.prepare();
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -117,7 +138,7 @@ public class VideoSettingActivity extends Activity {
             public void onClick(DialogInterface dialog, int position) {
                 System.out.println("fk you Malca : " + position);
                 Button p1_button = (Button) findViewById(R.id.music);
-                p1_button.setText(musicChoosenName);
+                p1_button.setText(chosenMusicName);
                 if (mp.isPlaying()) {
                     mp.stop();
                 }

@@ -40,14 +40,6 @@ public class MainActivity extends Activity {
         TextView myTextView = (TextView) findViewById(R.id.app_name);
         myTextView.setTypeface(myTypeface);
 
-        findViewById(R.id.playvideo).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setClass(MainActivity.this, PlayVideoActivity.class);
-                startActivity(intent);
-            }
-        });
 
         initImageLoader();
         init();

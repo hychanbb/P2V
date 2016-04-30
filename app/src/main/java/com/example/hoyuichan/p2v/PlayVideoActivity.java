@@ -11,14 +11,24 @@ import android.widget.MediaController;
 import android.widget.VideoView;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class PlayVideoActivity extends AppCompatActivity {
     VideoView videoview;
+    String chosenMusicPath;
+    String chosenMusicName ;
+    int  chosenEffect;
+    int chosenTemplate;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_video);
         Intent intent = getIntent();
+        chosenMusicPath = intent.getStringExtra("chosenMusicPath");
+        chosenMusicName = intent.getStringExtra("chosenMusicName");
+        chosenEffect = intent.getIntExtra("chosenEffect", 0);
+        chosenTemplate = intent.getIntExtra("chosenTemplate", 0);
+
         File video = new File("/sdcard/DCIM/Camera/combine_old_version.mp4");
         playVideoOnView(video);
     }
