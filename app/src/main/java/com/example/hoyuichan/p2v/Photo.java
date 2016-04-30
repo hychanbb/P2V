@@ -13,17 +13,12 @@ public class Photo implements Comparable<Photo>{
     private double averageAge;
     private double varianceAge;
     private double genderRatio;
-    private double meanOfAge;
-    private double varianceOfAge;
     private int facePosition;
     private double levelOfSmile;
 
-    public Photo(opencv_core.Mat mat, int facePosition, double varianceOfAge, double meanOfAge,
-                 double genderRatio, double varianceAge, double averageAge, int numberOfFace, double levelOfSmile, String photoPath) {
+    public Photo(opencv_core.Mat mat, int facePosition, double genderRatio, double varianceAge, double averageAge, int numberOfFace, double levelOfSmile, String photoPath) {
         this.mat = mat;
         this.facePosition = facePosition;
-        this.varianceOfAge = varianceOfAge;
-        this.meanOfAge = meanOfAge;
         this.genderRatio = genderRatio;
         this.varianceAge = varianceAge;
         this.averageAge = averageAge;
@@ -34,8 +29,6 @@ public class Photo implements Comparable<Photo>{
 
     public double getLevelOfSmile() {return levelOfSmile;}
     public int getFacePosition() {return facePosition;}
-    public double getVarianceOfAge() {return varianceOfAge;}
-    public double getMeanOfAge() {return meanOfAge;}
     public double getGenderRatio() {return genderRatio;}
     public double getVarianceAge() {return varianceAge;}
     public double getAverageAge() {return averageAge;}
@@ -45,8 +38,6 @@ public class Photo implements Comparable<Photo>{
 
     public void setLevelOfSmile(double levelOfSmile) {this.levelOfSmile = levelOfSmile;}
     public void setFacePosition(int facePosition) {this.facePosition = facePosition;}
-    public void setVarianceOfAge(double varianceOfAge) {this.varianceOfAge = varianceOfAge;}
-    public void setMeanOfAge(double meanOfAge) {this.meanOfAge = meanOfAge;}
     public void setGenderRatio(double genderRatio) {this.genderRatio = genderRatio;}
     public void setVarianceAge(double varianceAge) {this.varianceAge = varianceAge;}
     public void setAverageAge(double averageAge) {this.averageAge = averageAge;}
