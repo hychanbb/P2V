@@ -23,7 +23,7 @@ import java.util.ArrayList;
  */
 public class VideoSettingActivity extends Activity {
      MediaPlayer mp = new MediaPlayer();
-     ArrayList<String> musicPath = getMusicPath("mp3");
+     ArrayList<String> musicPath ;
      ArrayList<String> musicFileName = new ArrayList<String>();
      String chosenMusicPath = null;
      String chosenMusicName = null;
@@ -38,7 +38,7 @@ public class VideoSettingActivity extends Activity {
 
         Intent intent = getIntent();
         PhotoPathInStringArray = intent.getStringArrayExtra("all_path");
-
+        musicPath = getMusicPath("mp3");
         int[] id = {R.id.templateText, R.id.effectText, R.id.musicText};
         for (int i=0; i<id.length; i++){
             setFont(id[i]);
@@ -167,7 +167,9 @@ public class VideoSettingActivity extends Activity {
         }
         else {
                 for (int i = 0; i < files.length; i++) {
-                musicPath.addAll(searchMusic(files[i], type));
+                    ArrayList<String> temp = searchMusic(files[i], type);
+                    if(temp == null){continue;}
+                    musicPath.addAll(searchMusic(files[i], type));
             }
             return musicPath;
         }
