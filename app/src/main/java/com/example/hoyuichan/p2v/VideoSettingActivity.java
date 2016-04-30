@@ -23,6 +23,8 @@ import java.util.ArrayList;
  */
 public class VideoSettingActivity extends Activity {
      MediaPlayer mp = new MediaPlayer();
+     ArrayList<String> musicPath = getMusicPath("mp3");
+     ArrayList<String> musicFileName = new ArrayList<String>();
      String musicChoosenPath = null;
      String musicChoosenName = null;
 
@@ -39,24 +41,20 @@ public class VideoSettingActivity extends Activity {
         for (int i=0; i<id.length; i++){
             setFont(id[i]);
         }
-
+        // building ArrayList of musicFileName
+        for (int i =0 ; i< musicPath.size() ; i++){
+            File f = new File(musicPath.get(i));
+            musicFileName.add(f.getName());
+        }
 
 
         findViewById(R.id.music).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
-                final ArrayList<String> musicPath = getMusicPath("mp3");
-                final ArrayList<String> musicFileName = new ArrayList<String>();
-                // building arraylist of musicFileName
-                for (int i =0 ; i< musicPath.size() ; i++){
-                    File f = new File(musicPath.get(i));
-                    musicFileName.add(f.getName());
-                }
                 String[] musicInList = musicFileName.toArray(new String[0]);
                 final AlertDialog.Builder musicTemplateBuilder = new AlertDialog.Builder(VideoSettingActivity.this);
                 LayoutInflater musicTemplateInflater = getLayoutInflater();
                 musicTemplateBuilder.setTitle("Choose Music");
-
                 musicTemplateBuilder.setSingleChoiceItems(musicInList, 0, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int position) {
@@ -76,6 +74,7 @@ public class VideoSettingActivity extends Activity {
                         }
                         else{
                             try {
+                                mp = new MediaPlayer();
                                 mp.setDataSource(musicChoosenPath);
                                 mp.prepare();
                             } catch (IOException e) {
@@ -93,7 +92,6 @@ public class VideoSettingActivity extends Activity {
                         p1_button.setText(musicChoosenName);
                         if (mp.isPlaying()) {
                             mp.stop();
-                            mp.release();
                         }
                     }
                 });
@@ -102,7 +100,6 @@ public class VideoSettingActivity extends Activity {
                     public void onClick(DialogInterface dialog, int which) {
                         if (mp.isPlaying()) {
                             mp.stop();
-                            mp.release();
                         }
                     }
                 });
@@ -117,6 +114,9 @@ public class VideoSettingActivity extends Activity {
         TextView myText = (TextView) findViewById(id);
         myText.setTypeface(myTypeface);
     }
+
+
+
 
 
     private ArrayList<String> searchMusic(File file, String type){

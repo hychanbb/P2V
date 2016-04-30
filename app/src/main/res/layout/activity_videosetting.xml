@@ -75,7 +75,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/btn_sel"
-        android:text="Next"
+        android:text="Generate Video"
         android:textAllCaps="false"
         android:layout_marginTop="50dp"/>
 
