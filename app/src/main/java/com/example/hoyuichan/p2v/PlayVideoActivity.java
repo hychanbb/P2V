@@ -10,6 +10,7 @@ import android.widget.MediaController;
 import android.widget.VideoView;
 
 import org.bytedeco.javacpp.opencv_core;
+import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.FFmpegFrameRecorder;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.OpenCVFrameConverter;
@@ -17,10 +18,11 @@ import org.bytedeco.javacv.OpenCVFrameConverter;
 import java.io.File;
 import java.util.ArrayList;
 
+import static java.lang.Math.random;
 import static org.bytedeco.javacpp.opencv_imgcodecs.imread;
 
 public class PlayVideoActivity extends Activity {
-    boolean makevideoThreadDone;
+    boolean combineThreadDone;
     VideoView videoview;
     String chosenMusicPath;
     String chosenMusicName ;
@@ -28,6 +30,7 @@ public class PlayVideoActivity extends Activity {
     int chosenTemplate;
     String[] allPath;
     File makevideo;
+    File combine;
     ArrayList<opencv_core.Mat> photos = new ArrayList<opencv_core.Mat>();
     private int transitionFrameDuration;
     private int mainFrameDuration;
@@ -52,7 +55,7 @@ public class PlayVideoActivity extends Activity {
         make_video_thread.start();
 
         while(true){
-            if (makevideoThreadDone == false){
+            if (combineThreadDone == false){
                 try {
                     Thread.sleep(2000);
                 } catch (InterruptedException e) {
@@ -60,7 +63,7 @@ public class PlayVideoActivity extends Activity {
                 }
             }
             else {
-                playVideoOnView(makevideo);
+                playVideoOnView(combine);
                 break;
             }
         }
@@ -91,7 +94,49 @@ public class PlayVideoActivity extends Activity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            makevideoThreadDone = true;
+            Thread combine_thread = new Thread(combine_worker);
+            combine_thread.start();
+        }
+    };
+
+    private Runnable combine_worker = new Runnable() {
+        File audio;
+        public void run() {
+            combine = new File("/sdcard/P2V/combine.mp4");
+            audio = new File(chosenMusicPath);
+            FFmpegFrameGrabber grabber1 = new FFmpegFrameGrabber(makevideo.getAbsolutePath());
+            FFmpegFrameGrabber grabber2 = new FFmpegFrameGrabber(audio.getAbsolutePath());
+            Frame video_frame = null;
+            Frame audio_frame = null;
+            FFmpegFrameRecorder recorder;
+            try {
+                grabber1.start();
+                grabber2.start();
+                final int totalFrame = grabber1.getLengthInFrames();
+                int addedFrame = 0;
+                recorder = new FFmpegFrameRecorder(combine.getAbsolutePath(), grabber1.getImageWidth(), grabber1.getImageHeight(), grabber2.getAudioChannels());
+                recorder.setFrameRate(grabber1.getFrameRate() * 2);
+                //recorder.setSampleRate(grabber2.getSampleRate());
+                //recorder.setFormat("mp4");
+                recorder.setSampleRate(grabber2.getSampleRate());
+                //recorder.setVideoBitrate(192000); // set 太底會濛
+                recorder.start();
+                //(video_frame = grabber1.grabFrame(true,true,true,false)
+                //while(((video_frame = grabber1.grabFrame())!= null) && ((audio_frame = grabber2.grabFrame())!= null)){
+                while (addedFrame < totalFrame) {
+                    audio_frame = grabber2.grabFrame();
+                    video_frame = grabber1.grabFrame();
+                    recorder.record(video_frame);
+                    recorder.record(audio_frame);
+                    addedFrame++;
+                }
+                grabber1.stop();
+                grabber2.stop();
+                recorder.stop();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            combineThreadDone = true;
         }
     };
 
