@@ -51,72 +51,16 @@ public class VideoSettingActivity extends Activity {
         findViewById(R.id.music).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
-                String[] musicInList = musicFileName.toArray(new String[0]);
-                final AlertDialog.Builder musicTemplateBuilder = new AlertDialog.Builder(VideoSettingActivity.this);
-                LayoutInflater musicTemplateInflater = getLayoutInflater();
-                musicTemplateBuilder.setTitle("Choose Music");
-                musicTemplateBuilder.setSingleChoiceItems(musicInList, 0, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int position) {
-                        System.out.println("ON9 Malca 有樣睇 : " + position);
-                        musicChoosenPath = musicPath.get(position);
-                        musicChoosenName = musicFileName.get(position);
-                        if (mp.isPlaying()) {
-                            try {
-                                mp.stop();
-                                mp.release();
-                                mp = new MediaPlayer();
-                                mp.setDataSource(musicChoosenPath);
-                                mp.prepare();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        else{
-                            try {
-                                mp = new MediaPlayer();
-                                mp.setDataSource(musicChoosenPath);
-                                mp.prepare();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        mp.start();
-                    }
-                });
-                musicTemplateBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int position) {
-                        System.out.println("fk you Malca : " + position);
-                        Button p1_button = (Button) findViewById(R.id.music);
-                        p1_button.setText(musicChoosenName);
-                        if (mp.isPlaying()) {
-                            mp.stop();
-                        }
-                    }
-                });
-                musicTemplateBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (mp.isPlaying()) {
-                            mp.stop();
-                        }
-                    }
-                });
-                musicTemplateBuilder.show();
+                selectMusic();
             }
         });
     }
-
 
     public void setFont(int id){
         Typeface myTypeface = Typeface.createFromAsset(getAssets(), "fff_Tusj.ttf");
         TextView myText = (TextView) findViewById(id);
         myText.setTypeface(myTypeface);
     }
-
-
-
 
 
     private ArrayList<String> searchMusic(File file, String type){
@@ -135,6 +79,59 @@ public class VideoSettingActivity extends Activity {
         }
         return musicSubPath;
     }
+
+    public void selectMusic (){String[] musicInList = musicFileName.toArray(new String[0]);
+        final AlertDialog.Builder musicTemplateBuilder = new AlertDialog.Builder(VideoSettingActivity.this);
+        musicTemplateBuilder.setTitle("Choose Music");
+        musicTemplateBuilder.setSingleChoiceItems(musicInList, 0, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int position) {
+                System.out.println("ON9 Malca 有樣睇 : " + position);
+                musicChoosenPath = musicPath.get(position);
+                musicChoosenName = musicFileName.get(position);
+                if (mp.isPlaying()) {
+                    try {
+                        mp.stop();
+                        mp.release();
+                        mp = new MediaPlayer();
+                        mp.setDataSource(musicChoosenPath);
+                        mp.prepare();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else{
+                    try {
+                        mp = new MediaPlayer();
+                        mp.setDataSource(musicChoosenPath);
+                        mp.prepare();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                mp.start();
+            }
+        });
+        musicTemplateBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int position) {
+                System.out.println("fk you Malca : " + position);
+                Button p1_button = (Button) findViewById(R.id.music);
+                p1_button.setText(musicChoosenName);
+                if (mp.isPlaying()) {
+                    mp.stop();
+                }
+            }
+        });
+        musicTemplateBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (mp.isPlaying()) {
+                    mp.stop();
+                }
+            }
+        });
+        musicTemplateBuilder.show();}
 
     public ArrayList<String> getMusicPath (String type){
         ArrayList<String> musicPath = new ArrayList<String>();
