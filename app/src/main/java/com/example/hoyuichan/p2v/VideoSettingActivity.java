@@ -89,7 +89,7 @@ public class VideoSettingActivity extends Activity {
         ArrayList<String> musicSubPath = new ArrayList<String>();
         File[] files = file.listFiles();
         if(files.length == 0) {
-            System.out.println("no files");
+            System.out.println(file.getName() +"has no files");
             return null;
         }
         for (int i =0; i < files.length; i++) {
@@ -163,6 +163,7 @@ public class VideoSettingActivity extends Activity {
         File sdCard = Environment.getExternalStorageDirectory();
         File[] files = sdCard.listFiles();
         if(files.length == 0){
+            System.out.println("ExternalStorageDirectory is null");
             return null;
         }
         else {
