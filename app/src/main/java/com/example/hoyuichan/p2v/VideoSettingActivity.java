@@ -29,7 +29,7 @@ public class VideoSettingActivity extends Activity {
      String chosenMusicName = null;
      int  chosenEffect;
      int chosenTemplate;
-
+        String[] PhotoPathInStringArray;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,7 +37,7 @@ public class VideoSettingActivity extends Activity {
         setContentView(R.layout.activity_videosetting);
 
         Intent intent = getIntent();
-        String[] s = intent.getStringArrayExtra("all_path");
+        PhotoPathInStringArray = intent.getStringArrayExtra("all_path");
 
         int[] id = {R.id.templateText, R.id.effectText, R.id.musicText};
         for (int i=0; i<id.length; i++){
@@ -61,18 +61,19 @@ public class VideoSettingActivity extends Activity {
         findViewById(R.id.btn_next).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
-                if( (chosenMusicPath!=null)&&(chosenEffect!=0)&&(chosenTemplate!=0)){
+                //if( (chosenMusicPath!=null)&&(chosenEffect!=0)&&(chosenTemplate!=0)){
                     Intent intent = new Intent();
                     intent.putExtra("chosenMusicPath" , chosenMusicPath);
                     intent.putExtra("chosenMusicName" , chosenMusicName);
                     intent.putExtra("chosenEffect" , chosenEffect);
                     intent.putExtra("chosenTemplate" , chosenTemplate);
+                    intent.putExtra("PhotoPathInStringArray", PhotoPathInStringArray);
                     intent.setClass(VideoSettingActivity.this, PlayVideoActivity.class);
                     startActivity(intent);
-                }
-                else {
+                //}
+                /*else {
                     Toast.makeText(VideoSettingActivity.this, "Please make selection on each section ! ", Toast.LENGTH_LONG).show();
-                }
+                }*/
             }
         });
     }

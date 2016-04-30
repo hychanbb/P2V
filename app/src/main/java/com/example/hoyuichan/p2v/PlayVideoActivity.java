@@ -13,7 +13,7 @@ import android.widget.VideoView;
 import java.io.File;
 import java.util.ArrayList;
 
-public class PlayVideoActivity extends AppCompatActivity {
+public class PlayVideoActivity extends Activity {
     VideoView videoview;
     String chosenMusicPath;
     String chosenMusicName ;
