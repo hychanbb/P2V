@@ -27,7 +27,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import static java.lang.Math.random;
+import static org.bytedeco.javacpp.opencv_core.addWeighted;
 import static org.bytedeco.javacpp.opencv_imgcodecs.imread;
+import static org.bytedeco.javacpp.opencv_imgproc.resize;
 
 public class PlayVideoActivity extends Activity {
     boolean combineThreadDone;
@@ -39,11 +41,18 @@ public class PlayVideoActivity extends Activity {
     String[] allPath;
     File makevideo;
     File combine;
-    ArrayList<opencv_core.Mat> photos = new ArrayList<opencv_core.Mat>();
+    ArrayList<opencv_core.Mat> imagesWithEffect1 = new ArrayList<opencv_core.Mat>();
+    ArrayList<opencv_core.Mat> imagesWithEffect2 = new ArrayList<opencv_core.Mat>();
+    ArrayList<opencv_core.Mat> imagesWithEffect3 = new ArrayList<opencv_core.Mat>();
+    ArrayList<opencv_core.Mat> images = new ArrayList<opencv_core.Mat>();
+
+    ArrayList<opencv_core.Mat> zooming = new ArrayList<opencv_core.Mat>();
+    int zoomWidth, zoomHeight, zoomStartingColumn, zoomStartingRow;
+
     private int transitionFrameDuration;
     private int mainFrameDuration;
     ArrayList<Photo> myPhotos = new ArrayList<Photo>();
-    Thread sort_photo_thread, add_template_thread, make_video_thread;
+    Thread sort_photo_thread, add_template_thread, add_effect_thread, make_video_thread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +72,9 @@ public class PlayVideoActivity extends Activity {
 
         add_template_thread = new Thread(add_template_worker);
         add_template_thread.start();
+
+        add_effect_thread = new Thread(add_effect_worker);
+        add_effect_thread.start();
 
         make_video_thread = new Thread(make_video_worker);
         make_video_thread.start();
@@ -105,13 +117,126 @@ public class PlayVideoActivity extends Activity {
                         myPhotos.add(myPhotos.size(), new Photo("sdcard/P2V/template/love2_3.jpg"));
                         break;
             }
+            for (int i=0; i<myPhotos.size(); i++){
+                images.add(imread(myPhotos.get(i).getPhotoPath()));
+                imagesWithEffect1.add(imread(myPhotos.get(i).getPhotoPath()));
+                imagesWithEffect2.add(imread(myPhotos.get(i).getPhotoPath()));
+                imagesWithEffect3.add(imread(myPhotos.get(i).getPhotoPath()));
+            }
+        }
+    };
+
+    private Runnable add_effect_worker = new Runnable() {
+        public void run() {
+            try {
+                add_template_thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            switch(chosenEffect){
+                case 0: break;
+                case 1: {
+                    opencv_core.Mat black = imread("sdcard/P2V/template/black.jpg");
+                    for (int i=0; i<images.size(); i++){
+                        int typeOfPhoto = checkPhotoType(images.get(i).cols(), images.get(i).rows());
+                        setZoom(typeOfPhoto);
+
+                        for (int k=0; k<=40; k++){
+                            opencv_core.Mat temp = images.get(i).clone();
+                            if (k==37 && i!=images.size()-1){
+                                int typeOfPhoto2 = checkPhotoType(images.get(i+1).cols(), images.get(i+1).rows());
+                                switch (typeOfPhoto2){
+                                    case 1: {
+                                        addWeighted(zoom(images.get(i), black, typeOfPhoto), 0.8, customZoom(images.get(i+1), black, 640, 480, 160, 120), 0.2, 0.0, temp);
+                                        break;
+                                    }
+                                    case 2: {
+                                        addWeighted(zoom(images.get(i), black, typeOfPhoto), 0.8, customZoom(images.get(i+1), black, 360, 480, 300, 120), 0.2, 0.0, temp);
+                                        break;
+                                    }
+                                    case 3: {
+                                        addWeighted(zoom(images.get(i), black, typeOfPhoto), 0.8, customZoom(images.get(i+1), black, 600, 600, 180, 60), 0.2, 0.0, temp);
+                                        break;
+                                    }
+                                }
+                                zooming.add(temp);
+                            }
+                            else if (k==38 && i!=images.size()-1){
+                                int typeOfPhoto2 = checkPhotoType(images.get(i+1).cols(), images.get(i+1).rows());
+                                switch (typeOfPhoto2){
+                                    case 1: {
+                                        addWeighted(zoom(images.get(i), black, typeOfPhoto), 0.6, customZoom(images.get(i+1), black, 648, 486, 156, 117), 0.4, 0.0, temp);
+                                        break;
+                                    }
+                                    case 2: {
+                                        addWeighted(zoom(images.get(i), black, typeOfPhoto), 0.6, customZoom(images.get(i+1), black, 364, 486, 298, 117), 0.4, 0.0, temp);
+                                        break;
+                                    }
+                                    case 3: {
+                                        addWeighted(zoom(images.get(i), black, typeOfPhoto), 0.6, customZoom(images.get(i+1), black, 603, 603, 179, 59), 0.4, 0.0, temp);
+                                        break;
+                                    }
+                                }
+                                zooming.add(temp);
+                            }
+                            else if (k==39 && i!=images.size()-1){
+                                int typeOfPhoto2 = checkPhotoType(images.get(i+1).cols(), images.get(i+1).rows());
+                                switch (typeOfPhoto2){
+                                    case 1: {
+                                        addWeighted(zoom(images.get(i), black, typeOfPhoto), 0.4, customZoom(images.get(i+1), black, 656, 492, 152, 114), 0.6, 0.0, temp);
+                                        break;
+                                    }
+                                    case 2: {
+                                        addWeighted(zoom(images.get(i), black, typeOfPhoto), 0.4, customZoom(images.get(i+1), black, 368, 492, 296, 114), 0.6, 0.0, temp);
+                                        break;
+                                    }
+                                    case 3: {
+                                        addWeighted(zoom(images.get(i), black, typeOfPhoto), 0.4, customZoom(images.get(i+1), black, 606, 606, 178, 58), 0.6, 0.0, temp);
+                                        break;
+                                    }
+                                }
+                                zooming.add(temp);
+                            }
+                            else if (k==40 && i!=images.size()-1){
+                                int typeOfPhoto2 = checkPhotoType(images.get(i+1).cols(), images.get(i+1).rows());
+                                switch (typeOfPhoto2){
+                                    case 1: {
+                                        addWeighted(zoom(images.get(i), black, typeOfPhoto), 0.2, customZoom(images.get(i+1), black, 664, 498, 148, 111), 0.8, 0.0, temp);
+                                        break;
+                                    }
+                                    case 2: {
+                                        addWeighted(zoom(images.get(i), black, typeOfPhoto), 0.2, customZoom(images.get(i+1), black, 372, 498, 294, 111), 0.8, 0.0, temp);
+                                        break;
+                                    }
+                                    case 3: {
+                                        addWeighted(zoom(images.get(i), black, typeOfPhoto), 0.2, customZoom(images.get(i+1), black, 609, 609, 177, 57), 0.8, 0.0, temp);
+                                        break;
+                                    }
+                                }
+                                zooming.add(temp);
+                            }
+                            else {
+                                if (k>=0 && k<4 && i!=0){
+                                    zoom(images.get(i), black, typeOfPhoto);
+                                }
+                                else {
+                                    zooming.add(zoom(images.get(i), black, typeOfPhoto));
+                                }
+                            }
+                        }
+                    }
+                    break;
+                }
+                case 2: break;
+            }
         }
     };
 
     private Runnable make_video_worker = new Runnable() {
         public  void run() {
             try {
-                add_template_thread.join();
+                add_effect_thread.join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -124,14 +249,28 @@ public class PlayVideoActivity extends Activity {
             Frame captured_frame;
             try {
                 recorder.setFrameRate(20);
-                transitionFrameDuration = 1;
-                mainFrameDuration = 20;
+                transitionFrameDuration = 4;
+                mainFrameDuration = 80;
                 recorder.start();
-                for (int i = 0; i < myPhotos.size(); i++) {
-                    //captured_frame = converter.convert(photos.get(i));
-                    captured_frame = converter.convert(imread(myPhotos.get(i).getPhotoPath()));
-                    for (int j = 0; j < mainFrameDuration; j++) {
-                        recorder.record(captured_frame);
+
+                switch (chosenEffect){
+                    case 0: {
+                        for (int i = 0; i < myPhotos.size(); i++) {
+                            captured_frame = converter.convert(imread(myPhotos.get(i).getPhotoPath()));
+                            for (int j = 0; j < mainFrameDuration; j++) {
+                                recorder.record(captured_frame);
+                            }
+                        }
+                        break;
+                    }
+                    case 1: {
+                        for (int i = 0; i < zooming.size(); i++) {
+                            captured_frame = converter.convert(zooming.get(i));
+                            for (int j = 0; j < transitionFrameDuration; j++) {
+                                recorder.record(captured_frame);
+                            }
+                        }
+                        break;
                     }
                 }
                 recorder.stop();
@@ -230,4 +369,83 @@ public class PlayVideoActivity extends Activity {
         return photos;
     }
 
+    private int checkPhotoType(int width, int height){
+        if (width > height)
+            return 1;
+        else if (width < height)
+            return 2;
+        else
+            return 3;
+    }
+
+    private opencv_core.Mat zoom (opencv_core.Mat image, opencv_core.Mat background, int typeOfPhoto){
+        resize(background, background, new opencv_core.Size(960, 720));
+        opencv_core.Mat tempBlackGround = background.clone();
+        opencv_core.Mat imageCopy = image.clone();
+        resize(imageCopy, imageCopy, new opencv_core.Size(zoomWidth, zoomHeight));
+        imageCopy.copyTo(tempBlackGround.colRange(zoomStartingColumn, zoomStartingColumn + zoomWidth).rowRange(zoomStartingRow, zoomStartingRow + zoomHeight));
+        changeZoom(typeOfPhoto);
+        return tempBlackGround;
+    }
+
+    private opencv_core.Mat customZoom(opencv_core.Mat image, opencv_core.Mat background, int width, int height, int startingColumn, int startingRow){
+        resize(background, background, new opencv_core.Size(960, 720));
+        opencv_core.Mat tempBlackGround = background.clone();
+        opencv_core.Mat imageCopy = image.clone();
+        resize(imageCopy, imageCopy, new opencv_core.Size(width, height));
+        imageCopy.copyTo(tempBlackGround.colRange(startingColumn, startingColumn + width).rowRange(startingRow, startingRow + height));
+        return tempBlackGround;
+    }
+
+    private void changeZoom(int typeOfPhoto){
+        switch (typeOfPhoto){
+            case 1: {
+                zoomWidth+=8;
+                zoomHeight+=6;
+                zoomStartingColumn-=4;
+                zoomStartingRow-=3;
+                break;
+            }
+            case 2: {
+                zoomWidth+=4;
+                zoomHeight+=6;
+                zoomStartingColumn-=2;
+                zoomStartingRow-=3;
+                break;
+            }
+            case 3: {
+                zoomWidth+=3;
+                zoomHeight+=3;
+                zoomStartingColumn-=1;
+                zoomStartingRow-=1;
+                break;
+            }
+        }
+    }
+
+    private void setZoom(int typeOfPhoto){
+        switch (typeOfPhoto){
+            case 1: {
+                zoomWidth = 640;
+                zoomHeight = 480;
+                zoomStartingColumn = 160;
+                zoomStartingRow = 120;
+                break;
+            }
+            case 2: {
+                zoomWidth = 360;
+                zoomHeight = 480;
+                zoomStartingColumn = 300;
+                zoomStartingRow = 120;
+                break;
+            }
+            case 3: {
+                zoomWidth = 600;
+                zoomHeight = 600;
+                zoomStartingColumn = 180;
+                zoomStartingRow = 60;
+                break;
+            }
+        }
+    }
 }

@@ -49,9 +49,9 @@ public class Splash extends Activity {
 
     private void saveTemplateImage(){
         String[] templateFileName = {"christmas1_1.jpg", "christmas1_2.jpg", "christmas1_3.jpg", "wedding1_1.jpg", "wedding1_2.jpg", "wedding1_3.jpg",
-                "wedding1_4.jpg", "love2_1.jpg", "love2_2.jpg", "love2_3.jpg"};
+                "wedding1_4.jpg", "love2_1.jpg", "love2_2.jpg", "love2_3.jpg", "black.jpg"};
         int[] resourceID = {R.drawable.christmas1_1, R.drawable.christmas1_2, R.drawable.christmas1_3, R.drawable.wedding1_1, R.drawable.wedding1_2,
-                R.drawable.wedding1_3, R.drawable.wedding1_4, R.drawable.love2_1, R.drawable.love2_2, R.drawable.love2_3};
+                R.drawable.wedding1_3, R.drawable.wedding1_4, R.drawable.love2_1, R.drawable.love2_2, R.drawable.love2_3, R.drawable.black};
 
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inSampleSize =1;
