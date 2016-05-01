@@ -79,11 +79,17 @@ public class Detection {
         double result = sim/3;
         return (result>threshold);
     }
-    public void simChecking (ArrayList<CustomGallery> photos ){
-        for (int i =0 ; i< photos.size()-1 ; i++){
-            for (int j =i+1 ; j< photos.size() ; j++){
-                if (simDetection(getHist(photos.get(i).sdcardPath), getHist(photos.get(j).sdcardPath))){
-                    photos.get(i).isSim = true;
+
+    public void simCheckingForAnGalleryArray(ArrayList<CustomGallery> selecedGallery){
+        for (int i =0 ; i< selecedGallery.size()-1 ; i++){
+            for (int j =i+1 ; j< selecedGallery.size() ; j++){
+                if (simDetection(getHist(selecedGallery.get(i).sdcardPath), getHist(selecedGallery.get(j).sdcardPath))){
+                    if(selecedGallery.get(i).averageSmile > selecedGallery.get(j).averageSmile) {
+                        selecedGallery.get(j).isSim = true;
+                    }
+                    else{
+                        selecedGallery.get(i).isSim = true;
+                    }
                 }
             }
         }

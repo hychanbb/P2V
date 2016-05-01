@@ -17,7 +17,6 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.example.hoyuichan.p2v.Detection;
 import com.example.hoyuichan.p2v.Photo;
@@ -42,6 +41,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import static org.bytedeco.javacpp.opencv_imgcodecs.imread;
 public class CustomGalleryActivity extends Activity {
+    boolean FandSDetectorDone = false;
+    ArrayList<CustomGallery> selectedGallery;
 	GridView gridGallery;
 	Handler handler;
 	GalleryAdapter adapter;
@@ -49,10 +50,12 @@ public class CustomGalleryActivity extends Activity {
 	Button btnGalleryOk;
 	String[]  allPath;
 	String action;
+    int detect_FaceAndSmile_worker_postion = 0;
 	private ImageLoader imageLoader;
-	private int numOfFace;
-	private int totalSmile;
-	private double averageSmile;
+	public int numOfFace;
+	public int totalSmile;
+	public double averageSmile;
+    ArrayList<Integer> numOfFaceList = new ArrayList<Integer>();
 	private ArrayList<Integer> age = new ArrayList<Integer>();
 	private int totalAge;
 	private double averageAge;
@@ -145,8 +148,7 @@ public class CustomGalleryActivity extends Activity {
 	View.OnClickListener mOkClickListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			selectAndGetPhotoPath();
-
+            selectAndGetPhotoPath();
 			faceDetection();
 			Intent intent = new Intent();
 			intent.setClass(CustomGalleryActivity.this, VideoSettingActivity.class);
@@ -237,38 +239,90 @@ public class CustomGalleryActivity extends Activity {
 	}
 
 	  public void selectAndGetPhotoPath(){
-		  ArrayList<CustomGallery> selected = adapter.getSelected();
+		   selectedGallery = adapter.getSelected();
+
           // remove all low resolution photo in arraylist
-          for (int k = 0; k < selected.size(); k++) {
-              if (new Detection().resDetection(selected.get(k).sdcardPath)) {
-                  System.out.println("Drop low res:" + selected.get(k).sdcardPath);
-                  selected.remove(k);
+          for (int k = 0; k < selectedGallery.size(); k++) {
+              if (new Detection().resDetection(selectedGallery.get(k).sdcardPath)) {
+                  System.out.println("Drop low res:" + selectedGallery.get(k).sdcardPath);
+                  selectedGallery.remove(k);
               }
           }
           // remove all blur photo in arraylist
-          for (int k = 0; k < selected.size(); k++) {
-              if (new Detection().blurDetection(selected.get(k).sdcardPath)) {
-                  System.out.println("Drop blur :" + selected.get(k).sdcardPath);
-                  selected.remove(k);
+          for (int k = 0; k < selectedGallery.size(); k++) {
+              if (new Detection().blurDetection(selectedGallery.get(k).sdcardPath)) {
+                  System.out.println("Drop blur :" + selectedGallery.get(k).sdcardPath);
+                  selectedGallery.remove(k);
               }
           }
 
-          // check sim photo and mark it down in Boolean isSim
-          new Detection().simChecking(selected);
+          // do face detection and store it in Gallery :  int numOfFace
+          /*for (int k = 0; k<selectedGallery.size(); k++) {
+              final Bitmap bmp = BitmapFactory.decodeFile(selectedGallery.get(k).sdcardPath);
+              FaceppDetect faceppDetect = new FaceppDetect();
+              detect_FaceAndSmile_worker_postion = k;
+              faceppDetect.setDetectCallback(new DetectCallback() {
+                  public void detectResult(JSONObject rst) {
+                      try {
+                          //find out all faces
+                          numOfFace = rst.getJSONArray("face").length();
+                          // set numOfFace in gallery
+                          selectedGallery.get(detect_FaceAndSmile_worker_postion).numOfFace = numOfFace;
+                          // add unique
+                          if(!numOfFaceList.contains(numOfFace)){
+                              numOfFaceList.add(numOfFace);}
+                          numOfFace=0;
+
+                          for (int i = 0; i < numOfFace; ++i) {
+                              //Way to detect smile
+                              totalSmile += rst.getJSONArray("face").getJSONObject(i)
+                                      .getJSONObject("attribute").getJSONObject("smiling").getInt("value");
+                          }
+                          if (numOfFace != 0) {
+                              averageSmile = totalSmile / (double) numOfFace;
+                              System.out.println(" Smile " + averageSmile);
+                              totalSmile = 0;
+                              averageSmile = 0;
+                              selectedGallery.get(detect_FaceAndSmile_worker_postion).averageSmile = averageSmile;
+                          }
+                      } catch (JSONException e) {
+                          e.printStackTrace();
+                          CustomGalleryActivity.this.runOnUiThread(new Runnable() {
+                              public void run() {
+                              }
+                          });
+                      }
+                  }
+              });
+              faceppDetect.detect(bmp);
+              //if ( k == selectedGallery.size()-1){FandSDetectorDone = true;}
+          }
+              System.out.println(numOfFaceList);
+
+          // 折多哂條Array
+*/
+
+          // check each array and mark it down in Boolean isSim , 要拎哂D sub path 黎做
+          new Detection().simCheckingForAnGalleryArray(selectedGallery);
+
+
+          // combine 番做一條
+
+
           // drop sim photo
-          for (int k = 0; k < selected.size(); k++) {
-              if (selected.get(k).isSim == true) {
-                  System.out.println("Drop sim:" +  selected.get(k).sdcardPath);
-                  selected.remove(k);
+          for (int k = 0; k < selectedGallery.size(); k++) {
+              if (selectedGallery.get(k).isSim == true) {
+                  System.out.println("Drop sim:" +  selectedGallery.get(k).sdcardPath);
+                  selectedGallery.remove(k);
               }
           }
 
           // get all paths
-		  allPath = new String[selected.size()];
+		  allPath = new String[selectedGallery.size()];
 		  for (int i = 0; i < allPath.length; i++) {
-			  allPath[i] = selected.get(i).sdcardPath;
+			  allPath[i] = selectedGallery.get(i).sdcardPath;
 		  }
-          selected.clear();
+          selectedGallery.clear();
 	  }
 
 	public void faceDetection(){
