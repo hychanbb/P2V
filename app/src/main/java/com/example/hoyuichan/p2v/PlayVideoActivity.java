@@ -95,10 +95,17 @@ public class PlayVideoActivity extends Activity {
                 case 0: break;
                 case 1: myPhotos.add(0, new Photo("/sdcard/P2V/template/christmas1_1.jpg"));
                         myPhotos.add(myPhotos.size()/2, new Photo("sdcard/P2V/template/christmas1_2.jpg"));
-                        myPhotos.add(myPhotos.size()-1, new Photo("sdcard/P2V/template/christmas1_3.jpg"));
+                        myPhotos.add(myPhotos.size(), new Photo("sdcard/P2V/template/christmas1_3.jpg"));
                         break;
-                case 2: break;
-                case 3: break;
+                case 2: myPhotos.add(0, new Photo("/sdcard/P2V/template/wedding1_1.jpg"));
+                        myPhotos.add(myPhotos.size()/3, new Photo("/sdcard/P2V/template/wedding1_2.jpg"));
+                        myPhotos.add(myPhotos.size()*2/3, new Photo("/sdcard/P2V/template/wedding1_3.jpg"));
+                        myPhotos.add(myPhotos.size(), new Photo("/sdcard/P2V/template/wedding1_4.jpg"));
+                        break;
+                case 3: myPhotos.add(0, new Photo("/sdcard/P2V/template/love2_1.jpg"));
+                        myPhotos.add(myPhotos.size()/2, new Photo("sdcard/P2V/template/love2_2.jpg"));
+                        myPhotos.add(myPhotos.size(), new Photo("sdcard/P2V/template/love2_3.jpg"));
+                        break;
             }
         }
     };
@@ -231,18 +238,21 @@ public class PlayVideoActivity extends Activity {
                                     "wedding1_4.jpg", "love2_1.jpg", "love2_2.jpg", "love2_3.jpg"};
         int[] resourceID = {R.drawable.christmas1_1, R.drawable.christmas1_2, R.drawable.christmas1_3, R.drawable.wedding1_1, R.drawable.wedding1_2,
                             R.drawable.wedding1_3, R.drawable.wedding1_4, R.drawable.love2_1, R.drawable.love2_2, R.drawable.love2_3};
-        for (int i=0; i<templateFileName.length; i++){
-            Bitmap bmp = BitmapFactory.decodeResource(getResources(), resourceID[i]);
-            File file = new File( "/sdcard/P2V/template/", templateFileName[i]);
-            try {
-                FileOutputStream outStream = new FileOutputStream(file);
-                bmp.compress(Bitmap.CompressFormat.PNG, 100, outStream);
-                outStream.flush();
-                outStream.close();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
+        File f = new File("/sdcard/P2V/template");
+        if (!f.exists()){
+            for (int i=0; i<templateFileName.length; i++){
+                Bitmap bmp = BitmapFactory.decodeResource(getResources(), resourceID[i]);
+                File file = new File( "/sdcard/P2V/template/", templateFileName[i]);
+                try {
+                    FileOutputStream outStream = new FileOutputStream(file);
+                    bmp.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+                    outStream.flush();
+                    outStream.close();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
