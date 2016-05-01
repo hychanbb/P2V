@@ -19,6 +19,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.hoyuichan.p2v.Detection;
 import com.example.hoyuichan.p2v.Photo;
 import com.example.hoyuichan.p2v.R;
 import com.example.hoyuichan.p2v.VideoSettingActivity;
@@ -33,19 +34,14 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.assist.PauseOnScrollListener;
 import com.nostra13.universalimageloader.utils.StorageUtils;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-
 import static org.bytedeco.javacpp.opencv_imgcodecs.imread;
-
 public class CustomGalleryActivity extends Activity {
-
 	GridView gridGallery;
 	Handler handler;
 	GalleryAdapter adapter;
@@ -66,13 +62,11 @@ public class CustomGalleryActivity extends Activity {
 	private int facePosition;
 	private double genderRatio;
 	static ArrayList<Photo> myPhotos = new ArrayList<Photo>();
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.gallery);
-
 		initImageLoader();
 		init();
 	}
@@ -105,7 +99,6 @@ public class CustomGalleryActivity extends Activity {
 	}
 
 	private void init() {
-
 		handler = new Handler();
 		gridGallery = (GridView) findViewById(R.id.gridGallery);
 		gridGallery.setFastScrollEnabled(true);
@@ -123,14 +116,11 @@ public class CustomGalleryActivity extends Activity {
 
 		btnGalleryOk = (Button) findViewById(R.id.btnGalleryOk);
 		btnGalleryOk.setOnClickListener(mOkClickListener);
-
 		new Thread() {
-
 			@Override
 			public void run() {
 				Looper.prepare();
 				handler.post(new Runnable() {
-
 					@Override
 					public void run() {
 						adapter.addAll(getGalleryPhotos());
@@ -155,8 +145,7 @@ public class CustomGalleryActivity extends Activity {
 	View.OnClickListener mOkClickListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			getPhotoPath();
-
+			selectAndgetPhotoPath();
 			faceDetection();
 			Intent intent = new Intent();
 			intent.setClass(CustomGalleryActivity.this, VideoSettingActivity.class);
@@ -200,7 +189,6 @@ public class CustomGalleryActivity extends Activity {
 
 	private class FaceppDetect {
 		DetectCallback callback = null;
-
 		public void setDetectCallback(DetectCallback detectCallback) {
 			callback = detectCallback;
 		}
@@ -230,7 +218,6 @@ public class CustomGalleryActivity extends Activity {
 							}
 						});
 					}
-
 				}
 			}).start();
 		}
@@ -248,8 +235,24 @@ public class CustomGalleryActivity extends Activity {
 		return temp/numOfFace;
 	}
 
-	  public void getPhotoPath(){
+	  public void selectAndgetPhotoPath(){
 		  ArrayList<CustomGallery> selected = adapter.getSelected();
+          // remove all low resolution photo in arraylist
+          for (int k = 0; k < selected.size(); k++) {
+              if (new Detection().resDetection(selected.get(k).sdcardPath)) {
+                  System.out.println("Drop low res:" + selected.get(k).sdcardPath);
+                  selected.remove(k);
+              }
+          }
+          // remove all blur photo in arraylist
+          for (int k = 0; k < selected.size(); k++) {
+              if (new Detection().blurDetection(selected.get(k).sdcardPath)) {
+                  System.out.println("Drop blur :" + selected.get(k).sdcardPath);
+                  selected.remove(k);
+              }
+          }
+
+          // get all paths
 		  allPath = new String[selected.size()];
 		  for (int i = 0; i < allPath.length; i++) {
 			  allPath[i] = selected.get(i).sdcardPath;
@@ -258,9 +261,10 @@ public class CustomGalleryActivity extends Activity {
 	  }
 
 	public void faceDetection(){
+        Bitmap bmp;
 		for (int i = 0; i < allPath.length; i++) {
 			final String path = allPath[i];
-			final Bitmap bmp = BitmapFactory.decodeFile(allPath[i]);
+			bmp = BitmapFactory.decodeFile(allPath[i]);
 			FaceppDetect faceppDetect = new FaceppDetect();
 			faceppDetect.setDetectCallback(new DetectCallback() {
 				public void detectResult(JSONObject rst) {

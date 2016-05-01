@@ -12,7 +12,7 @@ import static org.bytedeco.javacpp.opencv_imgproc.cvLaplace;
 /**
  * Created by hoyuichan on 4/26/2016.
  */
-public class Dectection {
+public class Detection {
 
     public boolean resDetection(String path){
         opencv_core.Mat m1 = imread(path);

@@ -56,8 +56,6 @@ public class PlayVideoActivity extends Activity {
         chosenTemplate = intent.getIntExtra("chosenTemplate", 0);
         allPath = intent.getStringArrayExtra("allPath");
 
-        saveTemplateImage();
-
         myPhotos = CustomGalleryActivity.getMyPhotos();
 
         sort_photo_thread = new Thread(sort_photo_worker);
@@ -232,35 +230,4 @@ public class PlayVideoActivity extends Activity {
         return photos;
     }
 
-    private void saveTemplateImage(){
-        String[] templateFileName = {"christmas1_1.jpg", "christmas1_2.jpg", "christmas1_3.jpg", "wedding1_1.jpg", "wedding1_2.jpg", "wedding1_3.jpg",
-                                    "wedding1_4.jpg", "love2_1.jpg", "love2_2.jpg", "love2_3.jpg"};
-        int[] resourceID = {R.drawable.christmas1_1, R.drawable.christmas1_2, R.drawable.christmas1_3, R.drawable.wedding1_1, R.drawable.wedding1_2,
-                            R.drawable.wedding1_3, R.drawable.wedding1_4, R.drawable.love2_1, R.drawable.love2_2, R.drawable.love2_3};
-
-            for (int i=0; i<templateFileName.length; i++){
-                Bitmap bmp = BitmapFactory.decodeResource(getResources(), resourceID[i]);
-                File f = new File( "/sdcard/P2V/template/", templateFileName[i]);
-                if (!f.exists()){
-                    f.getParentFile().mkdirs();
-                }
-                try {
-                    f.createNewFile();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                FileOutputStream fos = null;
-                try {
-                    fos = new FileOutputStream(f);
-                    bmp.compress(Bitmap.CompressFormat.PNG, 100, fos);
-                    fos.flush();
-                    fos.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                System.out.println("Path is here :  " + f.getAbsolutePath());
-            }
-
-    }
 }
