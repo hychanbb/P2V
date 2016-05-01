@@ -16,6 +16,10 @@ public class Photo implements Comparable<Photo>{
     private int facePosition;
     private double levelOfSmile;
 
+    public Photo(String photoPath){
+        this.photoPath = photoPath;
+    }
+
     public Photo(opencv_core.Mat mat, int facePosition, double genderRatio, double varianceAge, double averageAge, int numberOfFace, double levelOfSmile, String photoPath) {
         this.mat = mat;
         this.facePosition = facePosition;

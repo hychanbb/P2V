@@ -2,6 +2,8 @@ package com.example.hoyuichan.p2v;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.Menu;
@@ -18,6 +20,9 @@ import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.OpenCVFrameConverter;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -38,8 +43,7 @@ public class PlayVideoActivity extends Activity {
     private int transitionFrameDuration;
     private int mainFrameDuration;
     ArrayList<Photo> myPhotos = new ArrayList<Photo>();
-    Thread sort_photo_thread;
-    Thread make_video_thread;
+    Thread sort_photo_thread, add_template_thread, make_video_thread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,10 +56,15 @@ public class PlayVideoActivity extends Activity {
         chosenTemplate = intent.getIntExtra("chosenTemplate", 0);
         allPath = intent.getStringArrayExtra("allPath");
 
+        saveTemplateImage();
+
         myPhotos = CustomGalleryActivity.getMyPhotos();
 
         sort_photo_thread = new Thread(sort_photo_worker);
         sort_photo_thread.start();
+
+        add_template_thread = new Thread(add_template_worker);
+        add_template_thread.start();
 
         make_video_thread = new Thread(make_video_worker);
         make_video_thread.start();
@@ -75,10 +84,29 @@ public class PlayVideoActivity extends Activity {
         }
     }
 
+    private Runnable add_template_worker = new Runnable() {
+        public void run() {
+            try {
+                sort_photo_thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            switch(chosenTemplate){
+                case 0: break;
+                case 1: myPhotos.add(0, new Photo("/sdcard/P2V/template/christmas1_1.jpg"));
+                        myPhotos.add(myPhotos.size()/2, new Photo("sdcard/P2V/template/christmas1_2.jpg"));
+                        myPhotos.add(myPhotos.size()-1, new Photo("sdcard/P2V/template/christmas1_3.jpg"));
+                        break;
+                case 2: break;
+                case 3: break;
+            }
+        }
+    };
+
     private Runnable make_video_worker = new Runnable() {
         public  void run() {
             try {
-                sort_photo_thread.join();
+                add_template_thread.join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -196,5 +224,26 @@ public class PlayVideoActivity extends Activity {
     private ArrayList<Photo> sortByLevelOfSmile (ArrayList<Photo> photos){
         Collections.sort(photos);
         return photos;
+    }
+
+    private void saveTemplateImage(){
+        String[] templateFileName = {"christmas1_1.jpg", "christmas1_2.jpg", "christmas1_3.jpg", "wedding1_1.jpg", "wedding1_2.jpg", "wedding1_3.jpg",
+                                    "wedding1_4.jpg", "love2_1.jpg", "love2_2.jpg", "love2_3.jpg"};
+        int[] resourceID = {R.drawable.christmas1_1, R.drawable.christmas1_2, R.drawable.christmas1_3, R.drawable.wedding1_1, R.drawable.wedding1_2,
+                            R.drawable.wedding1_3, R.drawable.wedding1_4, R.drawable.love2_1, R.drawable.love2_2, R.drawable.love2_3};
+        for (int i=0; i<templateFileName.length; i++){
+            Bitmap bmp = BitmapFactory.decodeResource(getResources(), resourceID[i]);
+            File file = new File( "/sdcard/P2V/template/", templateFileName[i]);
+            try {
+                FileOutputStream outStream = new FileOutputStream(file);
+                bmp.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+                outStream.flush();
+                outStream.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
