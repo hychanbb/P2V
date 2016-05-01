@@ -145,7 +145,8 @@ public class CustomGalleryActivity extends Activity {
 	View.OnClickListener mOkClickListener = new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
-			selectAndgetPhotoPath();
+			selectAndGetPhotoPath();
+
 			faceDetection();
 			Intent intent = new Intent();
 			intent.setClass(CustomGalleryActivity.this, VideoSettingActivity.class);
@@ -235,7 +236,7 @@ public class CustomGalleryActivity extends Activity {
 		return temp/numOfFace;
 	}
 
-	  public void selectAndgetPhotoPath(){
+	  public void selectAndGetPhotoPath(){
 		  ArrayList<CustomGallery> selected = adapter.getSelected();
           // remove all low resolution photo in arraylist
           for (int k = 0; k < selected.size(); k++) {
@@ -248,6 +249,16 @@ public class CustomGalleryActivity extends Activity {
           for (int k = 0; k < selected.size(); k++) {
               if (new Detection().blurDetection(selected.get(k).sdcardPath)) {
                   System.out.println("Drop blur :" + selected.get(k).sdcardPath);
+                  selected.remove(k);
+              }
+          }
+
+          // check sim photo and mark it down in Boolean isSim
+          new Detection().simChecking(selected);
+          // drop sim photo
+          for (int k = 0; k < selected.size(); k++) {
+              if (selected.get(k).isSim == true) {
+                  System.out.println("Drop sim:" +  selected.get(k).sdcardPath);
                   selected.remove(k);
               }
           }

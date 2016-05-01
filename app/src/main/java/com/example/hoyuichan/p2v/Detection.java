@@ -1,8 +1,11 @@
 package com.example.hoyuichan.p2v;
 
+import com.example.hoyuichan.p2v.MultiplePhotoSelection.CustomGallery;
+
 import org.bytedeco.javacpp.opencv_core;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 
 import static org.bytedeco.javacpp.opencv_core.cvAvgSdv;
 import static org.bytedeco.javacpp.opencv_imgcodecs.cvLoadImage;
@@ -76,5 +79,13 @@ public class Detection {
         double result = sim/3;
         return (result>threshold);
     }
-
+    public void simChecking (ArrayList<CustomGallery> photos ){
+        for (int i =0 ; i< photos.size()-1 ; i++){
+            for (int j =i+1 ; j< photos.size() ; j++){
+                if (simDetection(getHist(photos.get(i).sdcardPath), getHist(photos.get(j).sdcardPath))){
+                    photos.get(i).isSim = true;
+                }
+            }
+        }
+    }
 }
