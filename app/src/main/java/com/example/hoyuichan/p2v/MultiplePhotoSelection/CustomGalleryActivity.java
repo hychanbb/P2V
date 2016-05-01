@@ -49,13 +49,11 @@ public class CustomGalleryActivity extends Activity {
 	GridView gridGallery;
 	Handler handler;
 	GalleryAdapter adapter;
-
 	ImageView imgNoMedia;
 	Button btnGalleryOk;
 	String[]  allPath;
 	String action;
 	private ImageLoader imageLoader;
-
 	private int numOfFace;
 	private int totalSmile;
 	private double averageSmile;
@@ -67,7 +65,6 @@ public class CustomGalleryActivity extends Activity {
 	private int numOfFemale;
 	private int facePosition;
 	private double genderRatio;
-
 	static ArrayList<Photo> myPhotos = new ArrayList<Photo>();
 
 	@Override
@@ -156,9 +153,9 @@ public class CustomGalleryActivity extends Activity {
 	}
 
 	View.OnClickListener mOkClickListener = new View.OnClickListener() {
-
 		@Override
 		public void onClick(View v) {
+			getPhotoPath();
 
 			faceDetection();
 			Intent intent = new Intent();
@@ -169,43 +166,33 @@ public class CustomGalleryActivity extends Activity {
 	};
 
 	AdapterView.OnItemClickListener mItemMulClickListener = new AdapterView.OnItemClickListener() {
-
 		@Override
 		public void onItemClick(AdapterView<?> l, View v, int position, long id) {
 			adapter.changeSelection(v, position);
-
 		}
 	};
 
 	private ArrayList<CustomGallery> getGalleryPhotos() {
 		ArrayList<CustomGallery> galleryList = new ArrayList<CustomGallery>();
-
 		try {
 			final String[] columns = { MediaStore.Images.Media.DATA,
 					MediaStore.Images.Media._ID };
 			final String orderBy = MediaStore.Images.Media._ID;
-
 			Cursor imagecursor = managedQuery(
 					MediaStore.Images.Media.EXTERNAL_CONTENT_URI, columns,
 					null, null, orderBy);
-
 			if (imagecursor != null && imagecursor.getCount() > 0) {
-
 				while (imagecursor.moveToNext()) {
 					CustomGallery item = new CustomGallery();
-
 					int dataColumnIndex = imagecursor
 							.getColumnIndex(MediaStore.Images.Media.DATA);
-
 					item.sdcardPath = imagecursor.getString(dataColumnIndex);
-
 					galleryList.add(item);
 				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 		// show newest photo at beginning of the list
 		Collections.reverse(galleryList);
 		return galleryList;
@@ -219,22 +206,16 @@ public class CustomGalleryActivity extends Activity {
 		}
 
 		public void detect(final Bitmap image) {
-
 			new Thread(new Runnable() {
-
 				public void run() {
 					HttpRequests httpRequests = new HttpRequests("4480afa9b8b364e30ba03819f3e9eff5", "Pz9VFT8AP3g_Pz8_dz84cRY_bz8_Pz8M", true, false);
-
 					ByteArrayOutputStream stream = new ByteArrayOutputStream();
 					float scale = Math.min(1, Math.min(600f / image.getWidth(), 600f / image.getHeight()));
 					Matrix matrix = new Matrix();
 					matrix.postScale(scale, scale);
-
 					Bitmap imgSmall = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight(), matrix, false);
-
 					imgSmall.compress(Bitmap.CompressFormat.JPEG, 100, stream);
 					byte[] array = stream.toByteArray();
-
 					try {
 						//detect
 						JSONObject result = httpRequests.detectionDetect(new PostParameters().setImg(array));
@@ -246,7 +227,6 @@ public class CustomGalleryActivity extends Activity {
 						e.printStackTrace();
 						CustomGalleryActivity.this.runOnUiThread(new Runnable() {
 							public void run() {
-
 							}
 						});
 					}
@@ -268,12 +248,17 @@ public class CustomGalleryActivity extends Activity {
 		return temp/numOfFace;
 	}
 
+	  public void getPhotoPath(){
+		  ArrayList<CustomGallery> selected = adapter.getSelected();
+		  allPath = new String[selected.size()];
+		  for (int i = 0; i < allPath.length; i++) {
+			  allPath[i] = selected.get(i).sdcardPath;
+		  }
+          selected.clear();
+	  }
+
 	public void faceDetection(){
-		ArrayList<CustomGallery> selected = adapter.getSelected();
-		allPath = new String[selected.size()];
-		Thread[] faceThreads = new Thread[allPath.length];
 		for (int i = 0; i < allPath.length; i++) {
-			allPath[i] = selected.get(i).sdcardPath;
 			final String path = allPath[i];
 			final Bitmap bmp = BitmapFactory.decodeFile(allPath[i]);
 			FaceppDetect faceppDetect = new FaceppDetect();
@@ -334,7 +319,6 @@ public class CustomGalleryActivity extends Activity {
 						}
 
 						myPhotos.add(new Photo(imread(path), facePosition, genderRatio, varianceAge, averageAge, numOfFace, averageSmile, path));
-
 						averageAge = 0;
 						varianceAge = 0;
 						averageSmile = 0;
@@ -343,16 +327,13 @@ public class CustomGalleryActivity extends Activity {
 						numOfMale = 0;
 						numOfFemale = 0;
 						facePosition = 0;
-
 					} catch (JSONException e) {
 						e.printStackTrace();
 						CustomGalleryActivity.this.runOnUiThread(new Runnable() {
 							public void run() {
-
 							}
 						});
 					}
-
 				}
 			});
 			faceppDetect.detect(bmp);

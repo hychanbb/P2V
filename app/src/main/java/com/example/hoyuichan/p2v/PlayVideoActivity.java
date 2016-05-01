@@ -237,22 +237,30 @@ public class PlayVideoActivity extends Activity {
                                     "wedding1_4.jpg", "love2_1.jpg", "love2_2.jpg", "love2_3.jpg"};
         int[] resourceID = {R.drawable.christmas1_1, R.drawable.christmas1_2, R.drawable.christmas1_3, R.drawable.wedding1_1, R.drawable.wedding1_2,
                             R.drawable.wedding1_3, R.drawable.wedding1_4, R.drawable.love2_1, R.drawable.love2_2, R.drawable.love2_3};
-        File f = new File("/sdcard/P2V/template");
-        if (!f.exists()){
+
             for (int i=0; i<templateFileName.length; i++){
                 Bitmap bmp = BitmapFactory.decodeResource(getResources(), resourceID[i]);
-                File file = new File( "/sdcard/P2V/template/", templateFileName[i]);
+                File f = new File( "/sdcard/P2V/template/", templateFileName[i]);
+                if (!f.exists()){
+                    f.getParentFile().mkdirs();
+                }
                 try {
-                    FileOutputStream outStream = new FileOutputStream(file);
-                    bmp.compress(Bitmap.CompressFormat.PNG, 100, outStream);
-                    outStream.flush();
-                    outStream.close();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
+                    f.createNewFile();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
+                FileOutputStream fos = null;
+                try {
+                    fos = new FileOutputStream(f);
+                    bmp.compress(Bitmap.CompressFormat.PNG, 100, fos);
+                    fos.flush();
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("Path is here :  " + f.getAbsolutePath());
             }
-        }
+
     }
 }
