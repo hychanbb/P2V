@@ -214,7 +214,6 @@ public class PlayVideoActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-
     private void playVideoOnView(File video) {
         videoview = (VideoView)findViewById(R.id.video01);
         videoview.setVideoPath(video.getAbsolutePath());
