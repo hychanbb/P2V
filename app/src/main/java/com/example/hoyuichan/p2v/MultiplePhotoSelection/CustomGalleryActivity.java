@@ -68,7 +68,7 @@ public class CustomGalleryActivity extends Activity {
 	private int facePosition;
 	private double genderRatio;
 
-	ArrayList<Photo> myPhotos = new ArrayList<Photo>();
+	static ArrayList<Photo> myPhotos = new ArrayList<Photo>();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -273,8 +273,8 @@ public class CustomGalleryActivity extends Activity {
 		allPath = new String[selected.size()];
 		Thread[] faceThreads = new Thread[allPath.length];
 		for (int i = 0; i < allPath.length; i++) {
-			final String path = allPath[i];
 			allPath[i] = selected.get(i).sdcardPath;
+			final String path = allPath[i];
 			final Bitmap bmp = BitmapFactory.decodeFile(allPath[i]);
 			FaceppDetect faceppDetect = new FaceppDetect();
 			faceppDetect.setDetectCallback(new DetectCallback() {
@@ -357,5 +357,9 @@ public class CustomGalleryActivity extends Activity {
 			});
 			faceppDetect.detect(bmp);
 		}
+	}
+
+	public static ArrayList<Photo> getMyPhotos(){
+		return myPhotos;
 	}
 }

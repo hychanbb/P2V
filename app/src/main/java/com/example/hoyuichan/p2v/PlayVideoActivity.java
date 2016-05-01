@@ -9,6 +9,8 @@ import android.view.MenuItem;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
+import com.example.hoyuichan.p2v.MultiplePhotoSelection.CustomGalleryActivity;
+
 import org.bytedeco.javacpp.opencv_core;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.FFmpegFrameRecorder;
@@ -17,6 +19,7 @@ import org.bytedeco.javacv.OpenCVFrameConverter;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import static java.lang.Math.random;
 import static org.bytedeco.javacpp.opencv_imgcodecs.imread;
@@ -34,6 +37,9 @@ public class PlayVideoActivity extends Activity {
     ArrayList<opencv_core.Mat> photos = new ArrayList<opencv_core.Mat>();
     private int transitionFrameDuration;
     private int mainFrameDuration;
+    ArrayList<Photo> myPhotos = new ArrayList<Photo>();
+    Thread sort_photo_thread;
+    Thread make_video_thread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,12 +52,12 @@ public class PlayVideoActivity extends Activity {
         chosenTemplate = intent.getIntExtra("chosenTemplate", 0);
         allPath = intent.getStringArrayExtra("allPath");
 
-        for (int i=0; i<allPath.length; i++){
-            photos.add(imread(allPath[i]));
-            System.out.println("OK");
-        }
+        myPhotos = CustomGalleryActivity.getMyPhotos();
 
-        Thread make_video_thread = new Thread(make_video_worker);
+        sort_photo_thread = new Thread(sort_photo_worker);
+        sort_photo_thread.start();
+
+        make_video_thread = new Thread(make_video_worker);
         make_video_thread.start();
 
         while(true){
@@ -71,6 +77,11 @@ public class PlayVideoActivity extends Activity {
 
     private Runnable make_video_worker = new Runnable() {
         public  void run() {
+            try {
+                sort_photo_thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             OpenCVFrameConverter.ToMat converter = new OpenCVFrameConverter.ToMat();
             makevideo = new File("/sdcard/P2V/makevideo.mp4");
             if (!makevideo.exists()){
@@ -83,8 +94,9 @@ public class PlayVideoActivity extends Activity {
                 transitionFrameDuration = 1;
                 mainFrameDuration = 20;
                 recorder.start();
-                for (int i = 0; i < photos.size(); i++) {
-                    captured_frame = converter.convert(photos.get(i));
+                for (int i = 0; i < myPhotos.size(); i++) {
+                    //captured_frame = converter.convert(photos.get(i));
+                    captured_frame = converter.convert(imread(myPhotos.get(i).getPhotoPath()));
                     for (int j = 0; j < mainFrameDuration; j++) {
                         recorder.record(captured_frame);
                     }
@@ -140,6 +152,12 @@ public class PlayVideoActivity extends Activity {
         }
     };
 
+    private Runnable sort_photo_worker = new Runnable() {
+        public void run() {
+            sortByLevelOfSmile(myPhotos);
+        }
+    };
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -173,5 +191,10 @@ public class PlayVideoActivity extends Activity {
         videoview.setMinimumHeight(h * 3);
         videoview.setMinimumWidth(w * 4);
         videoview.start();
+    }
+
+    private ArrayList<Photo> sortByLevelOfSmile (ArrayList<Photo> photos){
+        Collections.sort(photos);
+        return photos;
     }
 }
