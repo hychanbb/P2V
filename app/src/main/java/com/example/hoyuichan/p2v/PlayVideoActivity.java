@@ -29,6 +29,7 @@ import java.util.Collections;
 import static java.lang.Math.random;
 import static org.bytedeco.javacpp.opencv_core.addWeighted;
 import static org.bytedeco.javacpp.opencv_imgcodecs.imread;
+import static org.bytedeco.javacpp.opencv_imgcodecs.imwrite;
 import static org.bytedeco.javacpp.opencv_imgproc.resize;
 
 public class PlayVideoActivity extends Activity {
@@ -48,6 +49,7 @@ public class PlayVideoActivity extends Activity {
 
     ArrayList<opencv_core.Mat> zooming = new ArrayList<opencv_core.Mat>();
     int zoomWidth, zoomHeight, zoomStartingColumn, zoomStartingRow;
+    ArrayList<opencv_core.Mat> multipleInOne = new ArrayList<opencv_core.Mat>();
 
     private int transitionFrameDuration;
     private int mainFrameDuration;
@@ -137,98 +139,13 @@ public class PlayVideoActivity extends Activity {
             switch(chosenEffect){
                 case 0: break;
                 case 1: {
-                    opencv_core.Mat black = imread("sdcard/P2V/template/black.jpg");
-                    for (int i=0; i<images.size(); i++){
-                        int typeOfPhoto = checkPhotoType(images.get(i).cols(), images.get(i).rows());
-                        setZoom(typeOfPhoto);
-
-                        for (int k=0; k<=40; k++){
-                            opencv_core.Mat temp = images.get(i).clone();
-                            if (k==37 && i!=images.size()-1){
-                                int typeOfPhoto2 = checkPhotoType(images.get(i+1).cols(), images.get(i+1).rows());
-                                switch (typeOfPhoto2){
-                                    case 1: {
-                                        addWeighted(zoom(images.get(i), black, typeOfPhoto), 0.8, customZoom(images.get(i+1), black, 640, 480, 160, 120), 0.2, 0.0, temp);
-                                        break;
-                                    }
-                                    case 2: {
-                                        addWeighted(zoom(images.get(i), black, typeOfPhoto), 0.8, customZoom(images.get(i+1), black, 360, 480, 300, 120), 0.2, 0.0, temp);
-                                        break;
-                                    }
-                                    case 3: {
-                                        addWeighted(zoom(images.get(i), black, typeOfPhoto), 0.8, customZoom(images.get(i+1), black, 600, 600, 180, 60), 0.2, 0.0, temp);
-                                        break;
-                                    }
-                                }
-                                zooming.add(temp);
-                            }
-                            else if (k==38 && i!=images.size()-1){
-                                int typeOfPhoto2 = checkPhotoType(images.get(i+1).cols(), images.get(i+1).rows());
-                                switch (typeOfPhoto2){
-                                    case 1: {
-                                        addWeighted(zoom(images.get(i), black, typeOfPhoto), 0.6, customZoom(images.get(i+1), black, 648, 486, 156, 117), 0.4, 0.0, temp);
-                                        break;
-                                    }
-                                    case 2: {
-                                        addWeighted(zoom(images.get(i), black, typeOfPhoto), 0.6, customZoom(images.get(i+1), black, 364, 486, 298, 117), 0.4, 0.0, temp);
-                                        break;
-                                    }
-                                    case 3: {
-                                        addWeighted(zoom(images.get(i), black, typeOfPhoto), 0.6, customZoom(images.get(i+1), black, 603, 603, 179, 59), 0.4, 0.0, temp);
-                                        break;
-                                    }
-                                }
-                                zooming.add(temp);
-                            }
-                            else if (k==39 && i!=images.size()-1){
-                                int typeOfPhoto2 = checkPhotoType(images.get(i+1).cols(), images.get(i+1).rows());
-                                switch (typeOfPhoto2){
-                                    case 1: {
-                                        addWeighted(zoom(images.get(i), black, typeOfPhoto), 0.4, customZoom(images.get(i+1), black, 656, 492, 152, 114), 0.6, 0.0, temp);
-                                        break;
-                                    }
-                                    case 2: {
-                                        addWeighted(zoom(images.get(i), black, typeOfPhoto), 0.4, customZoom(images.get(i+1), black, 368, 492, 296, 114), 0.6, 0.0, temp);
-                                        break;
-                                    }
-                                    case 3: {
-                                        addWeighted(zoom(images.get(i), black, typeOfPhoto), 0.4, customZoom(images.get(i+1), black, 606, 606, 178, 58), 0.6, 0.0, temp);
-                                        break;
-                                    }
-                                }
-                                zooming.add(temp);
-                            }
-                            else if (k==40 && i!=images.size()-1){
-                                int typeOfPhoto2 = checkPhotoType(images.get(i+1).cols(), images.get(i+1).rows());
-                                switch (typeOfPhoto2){
-                                    case 1: {
-                                        addWeighted(zoom(images.get(i), black, typeOfPhoto), 0.2, customZoom(images.get(i+1), black, 664, 498, 148, 111), 0.8, 0.0, temp);
-                                        break;
-                                    }
-                                    case 2: {
-                                        addWeighted(zoom(images.get(i), black, typeOfPhoto), 0.2, customZoom(images.get(i+1), black, 372, 498, 294, 111), 0.8, 0.0, temp);
-                                        break;
-                                    }
-                                    case 3: {
-                                        addWeighted(zoom(images.get(i), black, typeOfPhoto), 0.2, customZoom(images.get(i+1), black, 609, 609, 177, 57), 0.8, 0.0, temp);
-                                        break;
-                                    }
-                                }
-                                zooming.add(temp);
-                            }
-                            else {
-                                if (k>=0 && k<4 && i!=0){
-                                    zoom(images.get(i), black, typeOfPhoto);
-                                }
-                                else {
-                                    zooming.add(zoom(images.get(i), black, typeOfPhoto));
-                                }
-                            }
-                        }
-                    }
+                    usingZooming();
                     break;
                 }
-                case 2: break;
+                case 2: {
+                    usingMultipleInOne();
+                    break;
+                }
             }
         }
     };
@@ -267,6 +184,15 @@ public class PlayVideoActivity extends Activity {
                         for (int i = 0; i < zooming.size(); i++) {
                             captured_frame = converter.convert(zooming.get(i));
                             for (int j = 0; j < transitionFrameDuration; j++) {
+                                recorder.record(captured_frame);
+                            }
+                        }
+                        break;
+                    }
+                    case 2: {
+                        for (int i=0; i<multipleInOne.size(); i++) {
+                            captured_frame = converter.convert(multipleInOne.get(i));
+                            for (int j = 0; j < mainFrameDuration; j++) {
                                 recorder.record(captured_frame);
                             }
                         }
@@ -447,5 +373,332 @@ public class PlayVideoActivity extends Activity {
                 break;
             }
         }
+    }
+
+    private void usingZooming(){
+        opencv_core.Mat black = imread("sdcard/P2V/template/black.jpg");
+        for (int i=0; i<images.size(); i++){
+            int typeOfPhoto = checkPhotoType(images.get(i).cols(), images.get(i).rows());
+            setZoom(typeOfPhoto);
+
+            for (int k=0; k<=40; k++){
+                opencv_core.Mat temp = images.get(i).clone();
+                if (k==37 && i!=images.size()-1){
+                    int typeOfPhoto2 = checkPhotoType(images.get(i+1).cols(), images.get(i+1).rows());
+                    switch (typeOfPhoto2){
+                        case 1: {
+                            addWeighted(zoom(images.get(i), black, typeOfPhoto), 0.8, customZoom(images.get(i+1), black, 640, 480, 160, 120), 0.2, 0.0, temp);
+                            break;
+                        }
+                        case 2: {
+                            addWeighted(zoom(images.get(i), black, typeOfPhoto), 0.8, customZoom(images.get(i+1), black, 360, 480, 300, 120), 0.2, 0.0, temp);
+                            break;
+                        }
+                        case 3: {
+                            addWeighted(zoom(images.get(i), black, typeOfPhoto), 0.8, customZoom(images.get(i+1), black, 600, 600, 180, 60), 0.2, 0.0, temp);
+                            break;
+                        }
+                    }
+                    zooming.add(temp);
+                }
+                else if (k==38 && i!=images.size()-1){
+                    int typeOfPhoto2 = checkPhotoType(images.get(i+1).cols(), images.get(i+1).rows());
+                    switch (typeOfPhoto2){
+                        case 1: {
+                            addWeighted(zoom(images.get(i), black, typeOfPhoto), 0.6, customZoom(images.get(i+1), black, 648, 486, 156, 117), 0.4, 0.0, temp);
+                            break;
+                        }
+                        case 2: {
+                            addWeighted(zoom(images.get(i), black, typeOfPhoto), 0.6, customZoom(images.get(i+1), black, 364, 486, 298, 117), 0.4, 0.0, temp);
+                            break;
+                        }
+                        case 3: {
+                            addWeighted(zoom(images.get(i), black, typeOfPhoto), 0.6, customZoom(images.get(i+1), black, 603, 603, 179, 59), 0.4, 0.0, temp);
+                            break;
+                        }
+                    }
+                    zooming.add(temp);
+                }
+                else if (k==39 && i!=images.size()-1){
+                    int typeOfPhoto2 = checkPhotoType(images.get(i+1).cols(), images.get(i+1).rows());
+                    switch (typeOfPhoto2){
+                        case 1: {
+                            addWeighted(zoom(images.get(i), black, typeOfPhoto), 0.4, customZoom(images.get(i+1), black, 656, 492, 152, 114), 0.6, 0.0, temp);
+                            break;
+                        }
+                        case 2: {
+                            addWeighted(zoom(images.get(i), black, typeOfPhoto), 0.4, customZoom(images.get(i+1), black, 368, 492, 296, 114), 0.6, 0.0, temp);
+                            break;
+                        }
+                        case 3: {
+                            addWeighted(zoom(images.get(i), black, typeOfPhoto), 0.4, customZoom(images.get(i+1), black, 606, 606, 178, 58), 0.6, 0.0, temp);
+                            break;
+                        }
+                    }
+                    zooming.add(temp);
+                }
+                else if (k==40 && i!=images.size()-1){
+                    int typeOfPhoto2 = checkPhotoType(images.get(i+1).cols(), images.get(i+1).rows());
+                    switch (typeOfPhoto2){
+                        case 1: {
+                            addWeighted(zoom(images.get(i), black, typeOfPhoto), 0.2, customZoom(images.get(i+1), black, 664, 498, 148, 111), 0.8, 0.0, temp);
+                            break;
+                        }
+                        case 2: {
+                            addWeighted(zoom(images.get(i), black, typeOfPhoto), 0.2, customZoom(images.get(i+1), black, 372, 498, 294, 111), 0.8, 0.0, temp);
+                            break;
+                        }
+                        case 3: {
+                            addWeighted(zoom(images.get(i), black, typeOfPhoto), 0.2, customZoom(images.get(i+1), black, 609, 609, 177, 57), 0.8, 0.0, temp);
+                            break;
+                        }
+                    }
+                    zooming.add(temp);
+                }
+                else {
+                    if (k>=0 && k<4 && i!=0){
+                        zoom(images.get(i), black, typeOfPhoto);
+                    }
+                    else {
+                        zooming.add(zoom(images.get(i), black, typeOfPhoto));
+                    }
+                }
+            }
+        }
+    }
+
+    private void usingMultipleInOne(){
+        opencv_core.Mat black = imread("sdcard/P2V/template/black.jpg");
+        int count = images.size();
+        for (int i=0; i<images.size();){
+            int randomNumber = (int) (random()*100) % 8;
+            if (count < 4){
+                multipleInOne.add(addBackground(images.get(i++), black));
+                count--;
+            }
+            else {
+                switch (randomNumber) {
+                    case 0: {
+                        if (count >= 4) {
+                            multipleInOne.add(combine_style_1a(images.get(i++), images.get(i++), images.get(i++), images.get(i++)));
+                            count -= 4;
+                        }
+                        break;
+                    }
+                    case 1: {
+                        if (count >= 4) {
+                            multipleInOne.add(combine_style_1b(images.get(i++), images.get(i++), images.get(i++), images.get(i++)));
+                            count -= 4;
+                        }
+                        break;
+                    }
+                    case 2: {
+                        if (count >= 5) {
+                            multipleInOne.add(combine_style_2a(images.get(i++), images.get(i++), images.get(i++), images.get(i++), images.get(i++)));
+                            count -= 5;
+                        }
+                        break;
+                    }
+                    case 3: {
+                        if (count >= 5) {
+                            multipleInOne.add(combine_style_2b(images.get(i++), images.get(i++), images.get(i++), images.get(i++), images.get(i++)));
+                            count -= 5;
+                        }
+                        break;
+                    }
+                    case 4: {
+                        if (count >= 5) {
+                            multipleInOne.add(combine_style_3a(images.get(i++), images.get(i++), images.get(i++), images.get(i++), images.get(i++)));
+                            count -= 5;
+                        }
+                        break;
+                    }
+                    case 5: {
+                        if (count >= 5) {
+                            multipleInOne.add(combine_style_3b(images.get(i++), images.get(i++), images.get(i++), images.get(i++), images.get(i++)));
+                            count -= 5;
+                        }
+                        break;
+                    }
+                    case 6: {
+                        if (count >= 4) {
+                            multipleInOne.add(combine_style_4(images.get(i++), images.get(i++), images.get(i++), images.get(i++)));
+                            count -= 4;
+                        }
+                        break;
+                    }
+                    case 7: {
+                        if (count >= 9) {
+                            multipleInOne.add(combine_style_5(images.get(i++), images.get(i++), images.get(i++), images.get(i++), images.get(i++), images.get(i++), images.get(i++), images.get(i++), images.get(i++)));
+                            count -= 9;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    private opencv_core.Mat addBackground ( opencv_core.Mat image , opencv_core.Mat background) {
+        resize(background, background, new opencv_core.Size(960, 720));
+        opencv_core.Mat tempBlackGround = background.clone();
+        if (image.cols() < image.rows()){
+            resize(image, image, new opencv_core.Size(320, 480));
+            image.copyTo(tempBlackGround.rowRange(0, 480).colRange(240, 560));
+        }
+        else {
+            resize(image, image, new opencv_core.Size(640, 480));
+            image.copyTo(tempBlackGround.rowRange(0, 480).colRange(80, 720));
+        }
+        return tempBlackGround;
+    }
+
+    private opencv_core.Mat combine_style_1a (opencv_core.Mat a, opencv_core.Mat b, opencv_core.Mat c, opencv_core.Mat d){
+        opencv_core.Mat black = imread("/sdcard/Download/black.jpg");
+        opencv_core.Mat temp = black.clone();
+        resize(temp, temp, new opencv_core.Size(960, 720));
+        resize(a, a, new opencv_core.Size(310, 230));
+        resize(b, b, new opencv_core.Size(310, 230));
+        resize(c, c, new opencv_core.Size(310, 230));
+        resize(d, d, new opencv_core.Size(630, 710));
+        a.copyTo(temp.rowRange(5, 235).colRange(5, 315));
+        b.copyTo(temp.rowRange(245, 475).colRange(5, 315));
+        c.copyTo(temp.rowRange(485, 715).colRange(5, 315));
+        d.copyTo(temp.rowRange(5, 715).colRange(325, 955));
+        imwrite("/sdcard/DCIM/Camera//" + "testinginging.jpg", black);
+        return temp;
+    }
+
+
+    private opencv_core.Mat combine_style_1b (opencv_core.Mat a, opencv_core.Mat b, opencv_core.Mat c, opencv_core.Mat d){
+        opencv_core.Mat black = imread("/sdcard/Download/black.jpg");
+        opencv_core.Mat temp = black.clone();
+        resize(temp, temp, new opencv_core.Size(960, 720));
+        resize(a, a, new opencv_core.Size(310, 230));
+        resize(b, b, new opencv_core.Size(310, 230));
+        resize(c, c, new opencv_core.Size(310, 230));
+        resize(d, d, new opencv_core.Size(630, 710));
+        a.copyTo(temp.rowRange(5, 235).colRange(645, 955));
+        b.copyTo(temp.rowRange(245, 475).colRange(645, 955));
+        c.copyTo(temp.rowRange(485, 715).colRange(645, 955));
+        d.copyTo(temp.rowRange(5, 715).colRange(5, 635));
+        imwrite("/sdcard/DCIM/Camera//"+"testinginging.jpg", black);
+        return temp;
+    }
+
+    private opencv_core.Mat combine_style_2a (opencv_core.Mat a, opencv_core.Mat b, opencv_core.Mat c , opencv_core.Mat d, opencv_core.Mat e){
+        opencv_core.Mat black = imread("/sdcard/Download/black.jpg");
+        opencv_core.Mat temp = black.clone();
+        resize(temp, temp, new opencv_core.Size(960, 720));
+        resize(a, a, new opencv_core.Size(310, 230));
+        resize(b, b, new opencv_core.Size(310, 230));
+        resize(c, c, new opencv_core.Size(310, 230));
+        resize(d, d, new opencv_core.Size(630, 350));
+        resize(e, e, new opencv_core.Size(630, 350));
+        a.copyTo(temp.rowRange(5, 235).colRange(5, 315));
+        b.copyTo(temp.rowRange(245, 475).colRange(5, 315));
+        c.copyTo(temp.rowRange(485, 715).colRange(5, 315));
+        d.copyTo(temp.rowRange(5, 355).colRange(325, 955));
+        e.copyTo(temp.rowRange(365, 715).colRange(325, 955));
+        imwrite("/sdcard/DCIM/Camera//"+"testinginging.jpg", black);
+        return temp;
+    }
+
+
+    private opencv_core.Mat combine_style_2b (opencv_core.Mat a, opencv_core.Mat b, opencv_core.Mat c , opencv_core.Mat d, opencv_core.Mat e){
+        opencv_core.Mat black = imread("/sdcard/Download/black.jpg");
+        opencv_core.Mat temp = black.clone();
+        resize(temp, temp, new opencv_core.Size(960, 720));
+        resize(a, a, new opencv_core.Size(310, 230));
+        resize(b, b, new opencv_core.Size(310, 230));
+        resize(c, c, new opencv_core.Size(310, 230));
+        resize(d, d, new opencv_core.Size(630, 350));
+        resize(e, e, new opencv_core.Size(630, 350));
+        a.copyTo(temp.rowRange(5, 235).colRange(645, 955));
+        b.copyTo(temp.rowRange(245, 475).colRange(645, 955));
+        c.copyTo(temp.rowRange(485, 715).colRange(645, 955));
+        d.copyTo(temp.rowRange(5, 355).colRange(5, 635));
+        e.copyTo(temp.rowRange(365, 715).colRange(5, 635));
+        imwrite("/sdcard/DCIM/Camera//" + "testinginging.jpg", black);
+        return temp;
+    }
+
+    private opencv_core.Mat combine_style_3a (opencv_core.Mat a, opencv_core.Mat b, opencv_core.Mat c , opencv_core.Mat d, opencv_core.Mat e){
+        opencv_core.Mat black = imread("/sdcard/Download/black.jpg");
+        opencv_core.Mat temp = black.clone();
+        resize(temp, temp, new opencv_core.Size(960, 720));
+        resize(a, a, new opencv_core.Size(450, 370));
+        resize(b, b, new opencv_core.Size(450, 370));
+        resize(c, c, new opencv_core.Size(300, 250));
+        resize(d, d, new opencv_core.Size(300, 250));
+        resize(e, e, new opencv_core.Size(300, 250));
+        a.copyTo(temp.rowRange(20, 390).colRange(5, 455));
+        b.copyTo(temp.rowRange(20, 390).colRange(485, 935));
+        c.copyTo(temp.rowRange(420, 670).colRange(5, 305));
+        d.copyTo(temp.rowRange(420, 670).colRange(325, 625));
+        e.copyTo(temp.rowRange(420, 670).colRange(645, 945));
+        imwrite("/sdcard/DCIM/Camera//" + "testinginging.jpg", black);
+        return temp;
+    }
+
+
+    private opencv_core.Mat combine_style_3b (opencv_core.Mat a, opencv_core.Mat b, opencv_core.Mat c , opencv_core.Mat d, opencv_core.Mat e){
+        opencv_core.Mat black = imread("/sdcard/Download/black.jpg");
+        opencv_core.Mat temp = black.clone();
+        resize(temp, temp, new opencv_core.Size(960, 720));
+        resize(a, a, new opencv_core.Size(450, 370));
+        resize(b, b, new opencv_core.Size(450, 370));
+        resize(c, c, new opencv_core.Size(300, 250));
+        resize(d, d, new opencv_core.Size(300, 250));
+        resize(e, e, new opencv_core.Size(300, 250));
+        a.copyTo(temp.rowRange(305, 675).colRange(5, 455));
+        b.copyTo(temp.rowRange(305, 675).colRange(485, 935));
+        c.copyTo(temp.rowRange(20, 270).colRange(5, 305));
+        d.copyTo(temp.rowRange(20, 270).colRange(325, 625));
+        e.copyTo(temp.rowRange(20, 270).colRange(645, 945));
+        imwrite("/sdcard/DCIM/Camera//"+"testinginging.jpg", black);
+        return temp;
+    }
+
+    private opencv_core.Mat combine_style_4 (opencv_core.Mat a, opencv_core.Mat b, opencv_core.Mat c, opencv_core.Mat d){
+        opencv_core.Mat black = imread("/sdcard/Download/black.jpg");
+        opencv_core.Mat temp = black.clone();
+        resize(temp, temp, new opencv_core.Size(960, 720));
+        resize(a, a, new opencv_core.Size(470, 350));
+        resize(b, b, new opencv_core.Size(470, 350));
+        resize(c, c, new opencv_core.Size(470, 350));
+        resize(d, d, new opencv_core.Size(470, 350));
+        a.copyTo(temp.rowRange(5, 355).colRange(5, 475));
+        b.copyTo(temp.rowRange(5, 355).colRange(485, 955));
+        c.copyTo(temp.rowRange(365, 715).colRange(5, 475));
+        d.copyTo(temp.rowRange(365, 715).colRange(485, 955));
+        imwrite("/sdcard/DCIM/Camera//"+"testinginging.jpg", black);
+        return temp;
+    }
+
+    private opencv_core.Mat combine_style_5 (opencv_core.Mat a, opencv_core.Mat b, opencv_core.Mat c, opencv_core.Mat d, opencv_core.Mat e, opencv_core.Mat f, opencv_core.Mat g, opencv_core.Mat h,opencv_core.Mat i){
+        opencv_core.Mat black = imread("/sdcard/Download/black.jpg");
+        opencv_core.Mat temp = black.clone();
+        resize(temp, temp, new opencv_core.Size(960, 720));
+        resize(a, a, new opencv_core.Size(310, 230));
+        resize(b, b, new opencv_core.Size(310, 230));
+        resize(c, c, new opencv_core.Size(310, 230));
+        resize(d, d, new opencv_core.Size(310, 230));
+        resize(e, e, new opencv_core.Size(310, 230));
+        resize(f, f, new opencv_core.Size(310, 230));
+        resize(g, g, new opencv_core.Size(310, 230));
+        resize(h, h, new opencv_core.Size(310, 230));
+        resize(i, i, new opencv_core.Size(310, 230));
+        a.copyTo(temp.rowRange(5, 235).colRange(5, 315));
+        b.copyTo(temp.rowRange(5, 235).colRange(325, 635));
+        c.copyTo(temp.rowRange(5, 235).colRange(645, 955));
+        d.copyTo(temp.rowRange(245, 475).colRange(5, 315));
+        e.copyTo(temp.rowRange(245, 475).colRange(325, 635));
+        f.copyTo(temp.rowRange(245, 475).colRange(645, 955));
+        g.copyTo(temp.rowRange(485,715).colRange(5 ,315));
+        h.copyTo(temp.rowRange(485,715).colRange(325, 635));
+        i.copyTo(temp.rowRange(485,715).colRange(645, 955));
+        imwrite("/sdcard/DCIM/Camera//"+"testinginging.jpg", black);
+        return temp;
     }
 }
