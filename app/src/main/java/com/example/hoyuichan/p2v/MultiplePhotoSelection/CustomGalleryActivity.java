@@ -240,23 +240,23 @@ public class CustomGalleryActivity extends Activity {
 
 	  public void selectAndGetPhotoPath(){
 		   selectedGallery = adapter.getSelected();
-
-          // remove all low resolution photo in arraylist
-          for (int k = 0; k < selectedGallery.size(); k++) {
-              if (new Detection().resDetection(selectedGallery.get(k).sdcardPath)) {
-                  System.out.println("Drop low res:" + selectedGallery.get(k).sdcardPath);
-                  selectedGallery.remove(k);
+          if (selectedGallery.size() < 10) {
+              // remove all low resolution photo in arraylist
+              for (int k = 0; k < selectedGallery.size(); k++) {
+                  if (new Detection().resDetection(selectedGallery.get(k).sdcardPath)) {
+                      System.out.println("Drop low res:" + selectedGallery.get(k).sdcardPath);
+                      selectedGallery.remove(k);
+                  }
               }
-          }
-          // remove all blur photo in arraylist
-          for (int k = 0; k < selectedGallery.size(); k++) {
-              if (new Detection().blurDetection(selectedGallery.get(k).sdcardPath)) {
-                  System.out.println("Drop blur :" + selectedGallery.get(k).sdcardPath);
-                  selectedGallery.remove(k);
+              // remove all blur photo in arraylist
+              for (int k = 0; k < selectedGallery.size(); k++) {
+                  if (new Detection().blurDetection(selectedGallery.get(k).sdcardPath)) {
+                      System.out.println("Drop blur :" + selectedGallery.get(k).sdcardPath);
+                      selectedGallery.remove(k);
+                  }
               }
-          }
 
-          // do face detection and store it in Gallery :  int numOfFace
+              // do face detection and store it in Gallery :  int numOfFace
           /*for (int k = 0; k<selectedGallery.size(); k++) {
               final Bitmap bmp = BitmapFactory.decodeFile(selectedGallery.get(k).sdcardPath);
               FaceppDetect faceppDetect = new FaceppDetect();
@@ -302,21 +302,18 @@ public class CustomGalleryActivity extends Activity {
           // 折多哂條Array
 */
 
-          // check each array and mark it down in Boolean isSim , 要拎哂D sub path 黎做
-          new Detection().simCheckingForAnGalleryArray(selectedGallery);
+              // check each array and mark it down in Boolean isSim , 要拎哂D sub path 黎做
+              new Detection().simCheckingForAnGalleryArray(selectedGallery);
 
-
-          // combine 番做一條
-
-
-          // drop sim photo
-          for (int k = 0; k < selectedGallery.size(); k++) {
-              if (selectedGallery.get(k).isSim == true) {
-                  System.out.println("Drop sim:" +  selectedGallery.get(k).sdcardPath);
-                  selectedGallery.remove(k);
+              // combine 番做一條
+              // drop sim photo
+              for (int k = 0; k < selectedGallery.size(); k++) {
+                  if (selectedGallery.get(k).isSim == true) {
+                      System.out.println("Drop sim:" + selectedGallery.get(k).sdcardPath);
+                      selectedGallery.remove(k);
+                  }
               }
           }
-
           // get all paths
 		  allPath = new String[selectedGallery.size()];
 		  for (int i = 0; i < allPath.length; i++) {
