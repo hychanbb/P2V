@@ -1,5 +1,4 @@
 package com.example.hoyuichan.p2v;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -23,7 +22,6 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 import java.util.ArrayList;
-
 public class MainActivity extends Activity {
 
     Handler handler;
@@ -59,17 +57,14 @@ public class MainActivity extends Activity {
     }
 
     private void init() {
-
         handler = new Handler();
         adapter = new GalleryAdapter(getApplicationContext(), imageLoader);
         adapter.setMultiplePick(false);
-
         start = (Button) findViewById(R.id.start);
         start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent();
-
                 intent.setClass(MainActivity.this, CustomGalleryActivity.class);
                 startActivity(intent);
             }
@@ -98,6 +93,5 @@ public class MainActivity extends Activity {
 
         return super.onOptionsItemSelected(item);
     }
-
 
 }

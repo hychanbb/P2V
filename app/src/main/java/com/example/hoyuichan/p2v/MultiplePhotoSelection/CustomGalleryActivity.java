@@ -17,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.example.hoyuichan.p2v.Detection;
 import com.example.hoyuichan.p2v.Photo;
@@ -245,6 +246,7 @@ public class CustomGalleryActivity extends Activity {
               for (int k = 0; k < selectedGallery.size(); k++) {
                   if (new Detection().resDetection(selectedGallery.get(k).sdcardPath)) {
                       System.out.println("Drop low res:" + selectedGallery.get(k).sdcardPath);
+					  Toast.makeText(CustomGalleryActivity.this, "Drop low resolution :" + selectedGallery.get(k).sdcardPath, Toast.LENGTH_SHORT).show();
                       selectedGallery.remove(k);
                   }
               }
@@ -252,6 +254,7 @@ public class CustomGalleryActivity extends Activity {
               for (int k = 0; k < selectedGallery.size(); k++) {
                   if (new Detection().blurDetection(selectedGallery.get(k).sdcardPath)) {
                       System.out.println("Drop blur :" + selectedGallery.get(k).sdcardPath);
+					  Toast.makeText(CustomGalleryActivity.this, "Drop Blurried :" + selectedGallery.get(k).sdcardPath, Toast.LENGTH_SHORT).show();
                       selectedGallery.remove(k);
                   }
               }
@@ -302,17 +305,22 @@ public class CustomGalleryActivity extends Activity {
           // 折多哂條Array
 */
 
-         /*     // check each array and mark it down in Boolean isSim , 要拎哂D sub path 黎做
+             // check each array and mark it down in Boolean isSim , 要拎哂D sub path 黎做
               new Detection().simCheckingForAnGalleryArray(selectedGallery);
 
               // combine 番做一條
+
+
               // drop sim photo
-              for (int k = 0; k < selectedGallery.size(); k++) {
-                  if (selectedGallery.get(k).isSim == true) {
-                      System.out.println("Drop sim:" + selectedGallery.get(k).sdcardPath);
-                      selectedGallery.remove(k);
-                  }
-              }*/
+			  if( selectedGallery.size() < 5) {
+				  for (int k = 0; k < selectedGallery.size(); k++) {
+					  if (selectedGallery.get(k).isSim == true) {
+						  System.out.println("Drop sim:" + selectedGallery.get(k).sdcardPath);
+						  Toast.makeText(CustomGalleryActivity.this, "Drop similar :" + selectedGallery.get(k).sdcardPath, Toast.LENGTH_SHORT).show();
+						  selectedGallery.remove(k);
+					  }
+				  }
+			  }
           }
           // get all paths
 		  allPath = new String[selectedGallery.size()];
