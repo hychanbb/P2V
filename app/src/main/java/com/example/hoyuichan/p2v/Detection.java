@@ -39,7 +39,7 @@ public class Detection {
         image2.release();
         image1.release();
         double result =  d*d;
-        return (result< 600);
+        return (result< 300);
     }
 
     public double[][] getHist (String path){
@@ -75,7 +75,7 @@ public class Detection {
                 sim = sim +Math.sqrt(histA[i][j]*histB[i][j]);
             }
         }
-        double threshold = (double) 0.96;
+        double threshold = (double) 0.97;
         double result = sim/3;
         return (result>threshold);
     }

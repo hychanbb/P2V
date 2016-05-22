@@ -52,7 +52,7 @@ public class VideoSettingActivity extends Activity {
             musicFileName.add(f.getName());
         }
 
-        findViewById(R.id.template).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.template).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
                 selectTemplate();
@@ -65,6 +65,7 @@ public class VideoSettingActivity extends Activity {
                 selectEffect();
             }
         });
+
         findViewById(R.id.music).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
@@ -91,6 +92,7 @@ public class VideoSettingActivity extends Activity {
 
                     intent.putExtra("allPath", allPath);
                 System.out.println("printing all paths....");
+
                 for(int i = 0 ; i<allPath.length ; i++) {
                     System.out.println(allPath[i]);
                 }
@@ -130,6 +132,7 @@ public class VideoSettingActivity extends Activity {
         }
         return musicSubPath;
     }
+
     public void selectTemplate(){
         final String[] templateInList = {"No Template", "Chiristmas","Wedding","Romentic"};
         final AlertDialog.Builder templateBuilder = new AlertDialog.Builder(VideoSettingActivity.this);
@@ -172,12 +175,12 @@ public class VideoSettingActivity extends Activity {
             public void onClick(DialogInterface dialog, int position) {
                 Button button = (Button) findViewById(R.id.effect);
                 button.setText(chosenEffectName);
-
             }
         });
         effectBuilder.setNegativeButton("Cancel", null);
         effectBuilder.show();
     }
+
     public void selectMusic (){
         String[] musicInList = musicFileName.toArray(new String[0]);
         final AlertDialog.Builder musicTemplateBuilder = new AlertDialog.Builder(VideoSettingActivity.this);

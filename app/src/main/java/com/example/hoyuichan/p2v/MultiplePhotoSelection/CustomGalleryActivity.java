@@ -302,7 +302,7 @@ public class CustomGalleryActivity extends Activity {
           // 折多哂條Array
 */
 
-              // check each array and mark it down in Boolean isSim , 要拎哂D sub path 黎做
+         /*     // check each array and mark it down in Boolean isSim , 要拎哂D sub path 黎做
               new Detection().simCheckingForAnGalleryArray(selectedGallery);
 
               // combine 番做一條
@@ -312,7 +312,7 @@ public class CustomGalleryActivity extends Activity {
                       System.out.println("Drop sim:" + selectedGallery.get(k).sdcardPath);
                       selectedGallery.remove(k);
                   }
-              }
+              }*/
           }
           // get all paths
 		  allPath = new String[selectedGallery.size()];
