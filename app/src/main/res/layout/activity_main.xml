@@ -29,13 +29,5 @@
         android:layout_below="@id/app_name"
         android:layout_marginTop="30dp"
         android:layout_centerHorizontal="true"/>
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="play video"
-        android:id="@+id/playvideo"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
-
+    
 </RelativeLayout>
