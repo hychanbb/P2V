@@ -188,7 +188,7 @@ public class VideoSettingActivity extends Activity {
         musicTemplateBuilder.setSingleChoiceItems(musicInList, 0, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int position) {
-                System.out.println("ON9 Malca 有樣睇 : " + position);
+                System.out.println(position);
                 chosenMusicPath = musicPath.get(position);
                 chosenMusicName = musicFileName.get(position);
                 if (mp.isPlaying()) {
@@ -217,7 +217,7 @@ public class VideoSettingActivity extends Activity {
         musicTemplateBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int position) {
-                System.out.println("fk you Malca : " + position);
+                System.out.println(position);
                 Button p1_button = (Button) findViewById(R.id.music);
                 p1_button.setText(chosenMusicName);
                 if (mp.isPlaying()) {
